@@ -1,5 +1,6 @@
 import { Link, Outlet } from "react-router";
 import { Layout, Typography } from "antd";
+import { RadarChartOutlined } from "@ant-design/icons";
 
 import styles from "./AppHeader.module.css";
 
@@ -9,9 +10,12 @@ export function AppHeader() {
   return (
     <Layout className={styles.layout}>
       <Header className={styles.header}>
+        <div className={styles.topLine} />
+
         <Link to="/" className={styles.brand}>
           <div className={styles.logoMark}>
-            <span className={styles.logoIcon}>🛰️</span>
+            <RadarChartOutlined className={styles.logoIcon} />
+            <div className={styles.logoGlow} />
           </div>
 
           <div className={styles.brandText}>
@@ -26,7 +30,10 @@ export function AppHeader() {
         </Link>
 
         <div className={styles.headerRight}>
-          <span className={styles.systemTag}>SYSTEM ONLINE</span>
+          <div className={styles.systemTag}>
+            <span className={styles.statusDot} />
+            SYSTEM ONLINE
+          </div>
         </div>
       </Header>
 

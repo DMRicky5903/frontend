@@ -1,0 +1,133 @@
+.radar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 24vmin;
+  height: 24vmin;
+  margin: 0 auto 4vmin;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(34, 211, 238, 0.16),
+    rgba(99, 102, 241, 0.08) 62%,
+    transparent 78%
+  );
+  box-shadow:
+    0 0 5vmin rgba(34, 211, 238, 0.2),
+    inset 0 0 4vmin rgba(34, 211, 238, 0.12);
+}
+
+/* 雷達網格 */
+.radarGrid {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-image:
+    linear-gradient(
+      rgba(125, 211, 252, 0.18) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(125, 211, 252, 0.18) 1px,
+      transparent 1px
+    );
+  background-size: 2.4vmin 2.4vmin;
+  mask-image: radial-gradient(
+    circle at center,
+    black 15%,
+    rgba(0, 0, 0, 0.35) 60%,
+    transparent 78%
+  );
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    black 15%,
+    rgba(0, 0, 0, 0.35) 60%,
+    transparent 78%
+  );
+}
+
+/* 旋轉掃描扇形 */
+.radarSweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(34, 211, 238, 0.55),
+    rgba(34, 211, 238, 0.12) 55deg,
+    transparent 90deg
+  );
+  mask-image: radial-gradient(
+    circle at center,
+    black 10%,
+    transparent 76%
+  );
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    black 10%,
+    transparent 76%
+  );
+  animation: radarRotate 3.2s linear infinite;
+}
+
+@keyframes radarRotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 脈衝環 */
+.radarRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  animation: radarPulse 2.6s ease-out infinite;
+}
+
+.radarRingDelay {
+  animation-delay: 1.3s;
+}
+
+@keyframes radarPulse {
+  0% {
+    transform: scale(0.68);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(1.42);
+    opacity: 0;
+  }
+}
+
+/* 中央 icon */
+.radarIcon {
+  position: relative;
+  z-index: 3;
+  font-size: 10.5vmin !important;
+  color: #7dd3fc !important;
+  filter: drop-shadow(0 0 2.4vmin rgba(34, 211, 238, 0.8));
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3vmin;
+  margin-top: 4vmin;
+}
+
+.primaryButton,
+.ghostButton {
+  height: 6vmin;
+  min-width: 18vmin;
+  font-size: 2.2vmin;
+  padding-inline: 3vmin;
+}
+

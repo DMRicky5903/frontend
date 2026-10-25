@@ -1,148 +1,438 @@
+/* ===== Page ===== */
+
 .page {
   position: relative;
+  min-height: 100%;
   height: 100%;
   overflow: hidden;
   background: #05070d;
 }
+
+/* ===== Global grid ===== */
 
 .gridBackground {
   position: absolute;
   inset: 0;
   background-image:
     linear-gradient(
-      rgba(120, 180, 255, 0.06) 1px,
+      rgba(120, 180, 255, 0.05) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(120, 180, 255, 0.06) 1px,
+      rgba(120, 180, 255, 0.05) 1px,
       transparent 1px
     );
   background-size: 48px 48px;
   mask-image: radial-gradient(
     circle at center,
     black 20%,
-    transparent 75%
+    transparent 78%
   );
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    black 20%,
+    transparent 78%
+  );
+  pointer-events: none;
 }
+
+/* ===== Panels ===== */
 
 .panel {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
   color: white;
   text-decoration: none;
   transition:
-    filter 0.25s ease,
-    transform 0.25s ease;
+    clip-path 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.3s ease;
 }
 
+/* 左側 Chat */
 .chatPanel {
+  z-index: 2;
+  justify-content: flex-start;
+  padding-left: clamp(24px, 7vw, 120px);
   background:
     radial-gradient(
-      circle at 25% 35%,
-      rgba(0, 220, 255, 0.18),
-      transparent 45%
+      circle at 18% 40%,
+      rgba(0, 220, 255, 0.16),
+      transparent 48%
     ),
     linear-gradient(135deg, #071022 0%, #0b1730 100%);
   clip-path: polygon(0 0, 58% 0, 42% 100%, 0 100%);
 }
 
+/* 右側 Remote */
 .remotePanel {
+  z-index: 1;
+  justify-content: flex-end;
+  padding-right: clamp(24px, 7vw, 120px);
   background:
     radial-gradient(
-      circle at 75% 65%,
-      rgba(140, 90, 255, 0.18),
-      transparent 45%
+      circle at 82% 60%,
+      rgba(140, 90, 255, 0.16),
+      transparent 48%
     ),
     linear-gradient(225deg, #0a0f24 0%, #170f33 100%);
   clip-path: polygon(58% 0, 100% 0, 100% 100%, 42% 100%);
 }
 
-.panel:hover {
-  filter: brightness(1.18);
-  transform: scale(1.01);
+/* Hover 擴張 */
+.chatPanel:hover {
+  clip-path: polygon(0 0, 66% 0, 50% 100%, 0 100%);
+  filter: brightness(1.14);
 }
+
+.remotePanel:hover {
+  clip-path: polygon(50% 0, 100% 0, 100% 100%, 34% 100%);
+  filter: brightness(1.14);
+}
+
+/* ===== Diagonal light ===== */
+
+.diagonalLine {
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  left: 50%;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(120, 220, 255, 0.55),
+    rgba(140, 100, 255, 0.45),
+    transparent
+  );
+  transform: translateX(-50%) rotate(9.5deg);
+  filter: blur(0.4px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ===== Left decorations ===== */
+
+.chatDecor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.chatRing {
+  position: absolute;
+  top: 18%;
+  left: 12%;
+  width: 34vmin;
+  height: 34vmin;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 220, 255, 0.14);
+  animation: floatSlow 9s ease-in-out infinite;
+}
+
+.chatRingSmall {
+  position: absolute;
+  bottom: 16%;
+  left: 28%;
+  width: 18vmin;
+  height: 18vmin;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 220, 255, 0.1);
+  animation: floatSlow 7s ease-in-out infinite reverse;
+}
+
+.chatScanline {
+  position: absolute;
+  left: 0;
+  right: 42%;
+  height: 90px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 220, 255, 0) 0%,
+    rgba(0, 220, 255, 0.06) 50%,
+    rgba(0, 220, 255, 0) 100%
+  );
+  animation: scanDown 6s linear infinite;
+}
+
+/* ===== Right decorations ===== */
+
+.remoteDecor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.remoteRing {
+  position: absolute;
+  bottom: 18%;
+  right: 12%;
+  width: 34vmin;
+  height: 34vmin;
+  border-radius: 50%;
+  border: 1px solid rgba(140, 90, 255, 0.16);
+  animation: floatSlow 9s ease-in-out infinite reverse;
+}
+
+.remoteRingSmall {
+  position: absolute;
+  top: 16%;
+  right: 28%;
+  width: 18vmin;
+  height: 18vmin;
+  border-radius: 50%;
+  border: 1px solid rgba(140, 90, 255, 0.1);
+  animation: floatSlow 7s ease-in-out infinite;
+}
+
+.remoteScanline {
+  position: absolute;
+  left: 58%;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(
+    to bottom,
+    rgba(140, 90, 255, 0) 0%,
+    rgba(140, 90, 255, 0.07) 50%,
+    rgba(140, 90, 255, 0) 100%
+  );
+  animation: scanDown 7s linear infinite reverse;
+}
+
+/* ===== Glow ===== */
 
 .panelGlow {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.chatPanel .panelGlow {
   background: radial-gradient(
-    circle at center,
-    rgba(120, 220, 255, 0.14),
+    circle at 22% 45%,
+    rgba(0, 220, 255, 0.18),
     transparent 60%
   );
 }
 
-.panel:hover .panelGlow {
+.remotePanel .panelGlow {
+  background: radial-gradient(
+    circle at 78% 55%,
+    rgba(140, 90, 255, 0.2),
+    transparent 60%
+  );
+}
+
+.chatPanel:hover .panelGlow,
+.remotePanel:hover .panelGlow {
   opacity: 1;
 }
 
-.panelContent {
+/* ===== Left content ===== */
+
+.chatContent {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  max-width: min(80vw, 420px);
+  align-items: flex-start;
+  text-align: left;
+  max-width: min(70%, 440px);
+  transform: translateX(-2vmin);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.chatPanel:hover .chatContent {
+  transform: translateX(0) translateY(-1vmin);
+}
+
+/* ===== Right content ===== */
+
+.remoteContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  max-width: min(70%, 440px);
+  transform: translateX(2vmin);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.remotePanel:hover .remoteContent {
+  transform: translateX(0) translateY(-1vmin);
+}
+
+/* ===== Icon ===== */
+
+.iconShell {
+  display: grid;
+  place-items: center;
+  width: clamp(64px, 10vmin, 88px);
+  height: clamp(64px, 10vmin, 88px);
+  margin-bottom: 2.6vmin;
+  border-radius: 20px;
+  border: 1px solid rgba(120, 220, 255, 0.24);
+  background: rgba(120, 220, 255, 0.07);
+  backdrop-filter: blur(8px);
+}
+
+.chatPanel .iconShell {
+  border-color: rgba(0, 220, 255, 0.28);
+  box-shadow:
+    0 0 22px rgba(0, 220, 255, 0.14),
+    inset 0 0 14px rgba(0, 220, 255, 0.08);
+}
+
+.remotePanel .iconShell {
+  border-color: rgba(140, 90, 255, 0.3);
+  box-shadow:
+    0 0 22px rgba(140, 90, 255, 0.16),
+    inset 0 0 14px rgba(140, 90, 255, 0.08);
 }
 
 .icon {
-  font-size: clamp(42px, 7vmin, 72px);
-  margin-bottom: 12px;
+  font-size: clamp(30px, 5vmin, 42px);
 }
+
+.chatPanel .icon {
+  color: #7dd3fc;
+  filter: drop-shadow(0 0 14px rgba(0, 220, 255, 0.6));
+}
+
+.remotePanel .icon {
+  color: #c4b5fd;
+  filter: drop-shadow(0 0 14px rgba(140, 90, 255, 0.6));
+}
+
+/* ===== Text ===== */
 
 .panelTitle {
   margin: 0 !important;
   color: white !important;
-  font-size: clamp(26px, 4vw, 44px) !important;
+  font-size: clamp(26px, 5vmin, 46px) !important;
   letter-spacing: 2px;
+  line-height: 1.15;
 }
 
 .panelDescription {
-  margin-top: 8px;
+  margin-top: 1.6vmin;
   color: rgba(220, 235, 255, 0.72) !important;
-  font-size: clamp(13px, 1.6vw, 16px) !important;
+  font-size: clamp(13px, 2.2vmin, 16px) !important;
+  line-height: 1.5;
 }
 
-.panelAction {
-  margin-top: 24px;
-  padding: 10px 20px;
+/* ===== Hover hint ===== */
+
+.panelHint {
+  margin-top: 4vmin;
+  padding: 1.5vmin 3vmin;
   border-radius: 999px;
-  border: 1px solid rgba(120, 220, 255, 0.35);
-  background: rgba(120, 220, 255, 0.08);
-  color: rgba(190, 235, 255, 0.95);
-  font-size: 13px;
-  letter-spacing: 1px;
+  font-size: clamp(11px, 1.9vmin, 13px);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
-.centerLine {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(120, 220, 255, 0.35),
-    transparent
-  );
-  transform: translateX(-50%);
-  pointer-events: none;
+.chatPanel .panelHint {
+  color: rgba(190, 240, 255, 0.95);
+  border: 1px solid rgba(0, 220, 255, 0.4);
+  background: rgba(0, 220, 255, 0.08);
 }
 
-@media (max-width: 768px) {
-  .panelTitle {
-    font-size: 24px !important;
+.remotePanel .panelHint {
+  color: rgba(220, 205, 255, 0.95);
+  border: 1px solid rgba(140, 90, 255, 0.45);
+  background: rgba(140, 90, 255, 0.1);
+}
+
+.chatPanel:hover .panelHint,
+.remotePanel:hover .panelHint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Animations ===== */
+
+@keyframes floatSlow {
+  0%,
+  100% {
+    transform: translateY(0);
   }
 
-  .panelDescription {
-    font-size: 12px !important;
+  50% {
+    transform: translateY(-2.4vmin);
+  }
+}
+
+@keyframes scanDown {
+  0% {
+    transform: translateY(-120px);
+  }
+
+  100% {
+    transform: translateY(110vh);
+  }
+}
+
+/* ===== Mobile portrait ===== */
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .chatPanel {
+    justify-content: center;
+    padding: 0 24px;
+    clip-path: polygon(0 0, 100% 0, 100% 48%, 0 52%);
+  }
+
+  .remotePanel {
+    justify-content: center;
+    padding: 0 24px;
+    clip-path: polygon(0 52%, 100% 48%, 100% 100%, 0 100%);
+  }
+
+  .chatPanel:hover {
+    clip-path: polygon(0 0, 100% 0, 100% 56%, 0 60%);
+  }
+
+  .remotePanel:hover {
+    clip-path: polygon(0 44%, 100% 40%, 100% 100%, 0 100%);
+  }
+
+  .chatContent,
+  .remoteContent {
+    align-items: center;
+    text-align: center;
+    max-width: 100%;
+    transform: none;
+  }
+
+  .chatPanel:hover .chatContent,
+  .remotePanel:hover .remoteContent {
+    transform: translateY(-1vmin);
+  }
+
+  .diagonalLine {
+    display: none;
+  }
+
+  .chatRing,
+  .remoteRing {
+    width: 42vmin;
+    height: 42vmin;
+  }
+
+  .chatRingSmall,
+  .remoteRingSmall {
+    width: 24vmin;
+    height: 24vmin;
   }
 }

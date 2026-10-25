@@ -1,22 +1,66 @@
 import { useNavigate } from "react-router";
-import { Button, Result } from "antd";
+import { Button, Result, Typography } from "antd";
+import { RadarChartOutlined } from "@ant-design/icons";
+
+import styles from "./NotFoundPage.module.css";
+
+const { Text } = Typography;
 
 export function NotFoundPage() {
   const navigate = useNavigate();
 
   return (
-    <Result
-      status="404"
-      title="404"
-      subTitle="Sorry, the page you visited does not exist."
-      extra={
-        <Button
-          type="primary"
-          onClick={() => navigate("/")}
-        >
-          Back Home
-        </Button>
-      }
-    />
+    <div className={styles.page}>
+      <div className={styles.grid} />
+      <div className={styles.glow} />
+
+      <div className={styles.content}>
+        <Result
+          className={styles.result}
+          icon={
+            <div className={styles.radar}>
+              {/* 雷達網格 */}
+              <div className={styles.radarGrid} />
+
+              {/* 掃描扇形 */}
+              <div className={styles.radarSweep} />
+
+              {/* 脈衝環 */}
+              <div className={styles.radarRing} />
+              <div className={`${styles.radarRing} ${styles.radarRingDelay}`} />
+
+              {/* 中央 icon */}
+              <RadarChartOutlined className={styles.radarIcon} />
+            </div>
+          }
+          title={<span className={styles.title}>404</span>}
+          subTitle={
+            <Text className={styles.subtitle}>
+              Signal lost. The requested route does not exist.
+            </Text>
+          }
+          extra={
+            <div className={styles.actions}>
+              <Button
+                type="primary"
+                size="large"
+                className={styles.primaryButton}
+                onClick={() => navigate("/")}
+              >
+                Back Home
+              </Button>
+
+              <Button
+                size="large"
+                className={styles.ghostButton}
+                onClick={() => navigate(-1)}
+              >
+                Go Back
+              </Button>
+            </div>
+          }
+        />
+      </div>
+    </div>
   );
 }
