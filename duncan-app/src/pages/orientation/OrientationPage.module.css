@@ -1,0 +1,99 @@
+.page {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(0, 220, 255, 0.12),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(140, 90, 255, 0.12),
+      transparent 40%
+    ),
+    linear-gradient(160deg, #05070d, #0a1229);
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(
+      rgba(120, 180, 255, 0.06) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(120, 180, 255, 0.06) 1px,
+      transparent 1px
+    );
+  background-size: 42px 42px;
+  mask-image: radial-gradient(
+    circle at center,
+    black 20%,
+    transparent 75%
+  );
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.phoneIcon {
+  display: grid;
+  place-items: center;
+  width: clamp(96px, 22vmin, 150px);
+  height: clamp(96px, 22vmin, 150px);
+  border-radius: 28px;
+  border: 1px solid rgba(120, 220, 255, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 0 30px rgba(0, 210, 255, 0.15),
+    inset 0 0 20px rgba(120, 180, 255, 0.1);
+  animation: rotateDevice 2.4s ease-in-out infinite;
+}
+
+.phone {
+  width: 34%;
+  height: 62%;
+  border-radius: 8px;
+  border: 2px solid rgba(190, 235, 255, 0.75);
+  background: rgba(190, 235, 255, 0.08);
+}
+
+@keyframes rotateDevice {
+  0%,
+  20% {
+    transform: rotate(0deg);
+  }
+
+  55%,
+  80% {
+    transform: rotate(90deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.title {
+  margin-top: 28px !important;
+  color: white !important;
+  letter-spacing: 1px;
+}
+
+.description {
+  color: rgba(200, 225, 255, 0.7) !important;
+}
+
