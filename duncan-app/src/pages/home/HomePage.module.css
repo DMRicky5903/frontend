@@ -1,0 +1,148 @@
+.page {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: #05070d;
+}
+
+.gridBackground {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(
+      rgba(120, 180, 255, 0.06) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(120, 180, 255, 0.06) 1px,
+      transparent 1px
+    );
+  background-size: 48px 48px;
+  mask-image: radial-gradient(
+    circle at center,
+    black 20%,
+    transparent 75%
+  );
+}
+
+.panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-decoration: none;
+  transition:
+    filter 0.25s ease,
+    transform 0.25s ease;
+}
+
+.chatPanel {
+  background:
+    radial-gradient(
+      circle at 25% 35%,
+      rgba(0, 220, 255, 0.18),
+      transparent 45%
+    ),
+    linear-gradient(135deg, #071022 0%, #0b1730 100%);
+  clip-path: polygon(0 0, 58% 0, 42% 100%, 0 100%);
+}
+
+.remotePanel {
+  background:
+    radial-gradient(
+      circle at 75% 65%,
+      rgba(140, 90, 255, 0.18),
+      transparent 45%
+    ),
+    linear-gradient(225deg, #0a0f24 0%, #170f33 100%);
+  clip-path: polygon(58% 0, 100% 0, 100% 100%, 42% 100%);
+}
+
+.panel:hover {
+  filter: brightness(1.18);
+  transform: scale(1.01);
+}
+
+.panelGlow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  background: radial-gradient(
+    circle at center,
+    rgba(120, 220, 255, 0.14),
+    transparent 60%
+  );
+}
+
+.panel:hover .panelGlow {
+  opacity: 1;
+}
+
+.panelContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: min(80vw, 420px);
+}
+
+.icon {
+  font-size: clamp(42px, 7vmin, 72px);
+  margin-bottom: 12px;
+}
+
+.panelTitle {
+  margin: 0 !important;
+  color: white !important;
+  font-size: clamp(26px, 4vw, 44px) !important;
+  letter-spacing: 2px;
+}
+
+.panelDescription {
+  margin-top: 8px;
+  color: rgba(220, 235, 255, 0.72) !important;
+  font-size: clamp(13px, 1.6vw, 16px) !important;
+}
+
+.panelAction {
+  margin-top: 24px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 220, 255, 0.35);
+  background: rgba(120, 220, 255, 0.08);
+  color: rgba(190, 235, 255, 0.95);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.centerLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(120, 220, 255, 0.35),
+    transparent
+  );
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .panelTitle {
+    font-size: 24px !important;
+  }
+
+  .panelDescription {
+    font-size: 12px !important;
+  }
+}

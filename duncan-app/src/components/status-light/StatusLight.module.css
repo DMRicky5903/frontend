@@ -1,0 +1,23 @@
+.light {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 40;
+  width: clamp(14px, 1.8vmin, 22px);
+  height: clamp(14px, 1.8vmin, 22px);
+  border-radius: 50%;
+}
+
+.green {
+  background: limegreen;
+  box-shadow:
+    0 0 10px limegreen,
+    0 0 22px rgba(50, 205, 50, 0.4);
+}
+
+.red {
+  background: red;
+  box-shadow:
+    0 0 10px red,
+    0 0 22px rgba(255, 0, 0, 0.4);
+}

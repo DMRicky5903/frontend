@@ -1,0 +1,21 @@
+.page {
+  height: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 32px);
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  color: white !important;
+}
+
+.placeholder {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgba(120, 180, 255, 0.25);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
