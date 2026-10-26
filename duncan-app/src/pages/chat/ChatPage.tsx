@@ -6,7 +6,7 @@ import { ChatInput } from "../../components/chat-input/ChatInput";
 import { MessageList } from "../../components/message-list/MessageList";
 import styles from "./ChatPage.module.css";
 
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
 export function ChatPage() {
   const {
@@ -19,19 +19,28 @@ export function ChatPage() {
   } = useChat();
 
   return (
-    <>  
-      <div className={styles.background} />
+    <>
+      <div className={styles.background}>
+        {Array.from({ length: 14 }).map((_, i) => (
+          <span
+            key={i}
+            className={styles.bubble}
+            style={{
+              left: `${4 + i * 7}%`,
+              width: `${8 + (i % 5) * 6}px`,
+              height: `${8 + (i % 5) * 6}px`,
+              animationDuration: `${14 + (i % 5) * 5}s`,
+              animationDelay: `${i * 1.2}s`,
+            }}
+          />
+        ))}
+      </div>
+
       <div className={styles.page}>
         <header className={styles.header}>
-          <div className={styles.heading}>
-            <Title level={4} className={styles.title}>
-              Chat
-            </Title>
-
-            <Text type="secondary" className={styles.subtitle}>
-              Ask about the robot, manufacturing, or anything else.
-            </Text>
-          </div>
+          <Title level={5} className={styles.title}>
+            Chat
+          </Title>
 
           <Button
             className={styles.clearButton}
@@ -42,6 +51,7 @@ export function ChatPage() {
             Clear
           </Button>
         </header>
+
 
         <main className={styles.chatPanel}>
           <MessageList messages={messages} />
