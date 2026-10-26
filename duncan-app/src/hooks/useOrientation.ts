@@ -1,3 +1,5 @@
+//src/hooks/useOrientation.ts
+
 import { useEffect, useState } from "react";
 
 export function useOrientation() {

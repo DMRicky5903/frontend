@@ -1,0 +1,54 @@
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.userRow {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(90, 150, 255, 0.16);
+  color: #7cabff;
+  font-size: 14px;
+}
+
+.bubble {
+  max-width: min(72%, 560px);
+  padding: 9px 13px;
+  border-radius: 14px;
+  line-height: 1.55;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.userBubble {
+  background: linear-gradient(135deg, #2f6fed, #4f8bff);
+  color: #fff;
+  border-bottom-right-radius: 5px;
+}
+
+.assistantBubble {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(120, 180, 255, 0.16);
+  color: rgba(255, 255, 255, 0.88);
+  border-bottom-left-radius: 5px;
+}
+
+.content {
+  color: inherit !important;
+}
+
+.pending {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

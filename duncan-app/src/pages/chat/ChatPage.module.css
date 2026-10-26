@@ -1,21 +1,98 @@
 .page {
-  height: 100%;
+  height: 100dvh;
   max-width: 960px;
   margin: 0 auto;
-  padding: clamp(16px, 3vw, 32px);
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+
+  background-color: #0b1120;
+  background-image:
+    linear-gradient(
+      rgba(11, 17, 32, 0.86),
+      rgba(11, 17, 32, 0.92)
+    ),
+    url("https://d2u1z1lopyfwlx.cloudfront.net/thumbnails/b5f20071-ada8-5a08-a68c-9a921d2e5766/c7c301e6-fde2-5f81-aa42-1c3a30c8e606.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+
+  height: 100dvh;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+
+
+.header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.heading {
+  min-width: 0;
 }
 
 .title {
-  color: white !important;
+  color: #fff !important;
+  margin: 0 !important;
 }
 
-.placeholder {
-  flex: 1;
-  display: grid;
-  place-items: center;
-  border: 1px dashed rgba(120, 180, 255, 0.25);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
+.subtitle {
+  display: block;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clearButton {
+  flex-shrink: 0;
+}
+
+.chatPanel {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: calc(100dvh - 190px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(120, 180, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 14px;
+}
+
+
+.footer {
+  flex-shrink: 0;
+}
+@media (min-width: 1024px) and (min-height: 700px) {
+  .chatPanel {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: min(75dvh, 720px);
+  }
 }

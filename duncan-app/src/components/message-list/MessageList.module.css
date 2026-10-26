@@ -1,0 +1,20 @@
+/* MessageList.module.css */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 2px 12px;
+}
+
+.empty {
+  min-height: 180px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+
+.emptyIcon {
+  font-size: 42px;
+  color: rgba(120, 180, 255, 0.45);
+}

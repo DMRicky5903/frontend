@@ -1,3 +1,5 @@
+//src/pages/remote/RemotePage.tsx
+
 import { useCallback, useState } from "react";
 import { Typography } from "antd";
 
@@ -8,8 +10,8 @@ import { StatusLight } from "../../components/status-light/StatusLight";
 import { useKeyboardJoystick } from "../../hooks/useKeyboardJoystick";
 
 import type {
-  LeftDirection,
-  RightDirection,
+  WheelDirection,
+  GimbalDirection,
 } from "../../types/messages";
 
 import styles from "./RemotePage.module.css";
@@ -24,40 +26,40 @@ const CAMERA_STREAM_URL =
 export function RemotePage() {
   const [lock, setLock] = useState(true);
 
-  const [leftDirection, setLeftDirection] =
-    useState<LeftDirection>("");
+  const [WheelDirection, setWheelDirection] =
+    useState<WheelDirection>("");
 
-  const [rightDirection, setRightDirection] =
-    useState<RightDirection>("");
+  const [GimbalDirection, setGimbalDirection] =
+    useState<GimbalDirection>("");
 
   const handleLeftMove = useCallback(
     (direction: Direction | "") => {
-      setLeftDirection(direction as LeftDirection);
+      setWheelDirection(direction as WheelDirection);
 
       if (!lock && direction) {
         console.log("SEND:", {
           type: "joystick",
           left: direction,
-          right: rightDirection,
+          right: GimbalDirection,
         });
       }
     },
-    [lock, rightDirection],
+    [lock, GimbalDirection],
   );
 
   const handleRightMove = useCallback(
     (direction: Direction | "") => {
-      setRightDirection(direction as RightDirection);
+      setGimbalDirection(direction as GimbalDirection);
 
       if (!lock && direction) {
         console.log("SEND:", {
           type: "joystick",
-          left: leftDirection,
+          left: WheelDirection,
           right: direction,
         });
       }
     },
-    [lock, leftDirection],
+    [lock, WheelDirection],
   );
 
   useKeyboardJoystick({
@@ -94,13 +96,15 @@ export function RemotePage() {
 
       <main className={styles.content}>
         <div className={styles.joystickColumn}>
-          <JoystickControl
-            label="LEFT"
-            side="left"
-            value={leftDirection as Direction | ""}
-            onMove={handleLeftMove}
-            onStop={() => handleLeftMove("")}
-          />
+          <div className={styles.joystickScale}>
+            <JoystickControl
+              label="LEFT"
+              side="left"
+              value={WheelDirection as Direction | ""}
+              onMove={handleLeftMove}
+              onStop={() => handleLeftMove("")}
+            />
+          </div>
         </div>
 
         <section className={styles.cameraColumn}>
@@ -112,13 +116,15 @@ export function RemotePage() {
         </section>
 
         <div className={styles.joystickColumn}>
-          <JoystickControl
-            label="RIGHT"
-            side="right"
-            value={rightDirection as Direction | ""}
-            onMove={handleRightMove}
-            onStop={() => handleRightMove("")}
-          />
+          <div className={styles.joystickScale}>
+            <JoystickControl
+              label="RIGHT"
+              side="right"
+              value={GimbalDirection as Direction | ""}
+              onMove={handleRightMove}
+              onStop={() => handleRightMove("")}
+            />
+          </div>
         </div>
       </main>
     </div>

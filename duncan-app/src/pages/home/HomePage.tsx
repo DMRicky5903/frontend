@@ -1,3 +1,5 @@
+//src/pages/home/HomePage.tsx
+
 import { Link } from "react-router";
 import { Typography } from "antd";
 import {
@@ -18,6 +20,7 @@ export function HomePage() {
       {/* 左側：AI Chat */}
       <Link to="/chat" className={`${styles.panel} ${styles.chatPanel}`}>
         <div className={styles.chatDecor}>
+          <div className={styles.chatPattern} />
           <div className={styles.chatRing} />
           <div className={styles.chatRingSmall} />
           <div className={styles.chatScanline} />
@@ -42,11 +45,18 @@ export function HomePage() {
             Enter Chat
           </span>
         </div>
+
+        <div className={styles.sideMeta}>
+          <span>Neural Link</span>
+          <span className={styles.metaDot} />
+          <span>Online</span>
+        </div>
       </Link>
 
       {/* 右側：Remote Control */}
       <Link to="/remote" className={`${styles.panel} ${styles.remotePanel}`}>
         <div className={styles.remoteDecor}>
+          <div className={styles.remotePattern} />
           <div className={styles.remoteRing} />
           <div className={styles.remoteRingSmall} />
           <div className={styles.remoteScanline} />
@@ -71,10 +81,32 @@ export function HomePage() {
             Enter Remote
           </span>
         </div>
+
+        <div className={styles.sideMeta}>
+          <span>Device Network</span>
+          <span className={styles.metaDot} />
+          <span>Connected</span>
+        </div>
       </Link>
 
-      {/* 斜切光線 */}
-      <div className={styles.diagonalLine} />
+      {/* 中央分界系統 */}
+      <div className={styles.dividerSystem}>
+        <div className={styles.dividerGlowLine} />
+        <div className={styles.dividerCore} />
+
+        <div className={styles.dividerTick}>
+          {Array.from({ length: 13 }).map((_, index) => (
+            <span key={index} />
+          ))}
+        </div>
+
+        <div className={styles.dividerNode}>
+          <span className={styles.dividerNodeDot} />
+        </div>
+
+        <div className={styles.dividerLabelLeft}>AI</div>
+        <div className={styles.dividerLabelRight}>IOT</div>
+      </div>
     </div>
   );
 }

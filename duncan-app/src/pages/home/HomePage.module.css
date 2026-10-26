@@ -92,28 +92,271 @@
   filter: brightness(1.14);
 }
 
-/* ===== Diagonal light ===== */
+/* ===== 左右陣營邊線 ===== */
 
-.diagonalLine {
+.chatPanel::after {
+  content: "";
   position: absolute;
-  top: -10%;
-  bottom: -10%;
-  left: 50%;
-  width: 2px;
+  top: 0;
+  bottom: 0;
+  right: 41%;
+  width: 1px;
   background: linear-gradient(
     to bottom,
     transparent,
-    rgba(120, 220, 255, 0.55),
-    rgba(140, 100, 255, 0.45),
+    rgba(0, 220, 255, 0.32),
     transparent
   );
-  transform: translateX(-50%) rotate(9.5deg);
-  filter: blur(0.4px);
+  transform: rotate(9.5deg);
+  transform-origin: center;
   pointer-events: none;
-  z-index: 3;
 }
 
-/* ===== Left decorations ===== */
+.remotePanel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 59%;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(140, 100, 255, 0.32),
+    transparent
+  );
+  transform: rotate(9.5deg);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+/* ===== 左側 AI 圖案 ===== */
+
+.chatPattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(
+      circle,
+      rgba(0, 220, 255, 0.16) 1px,
+      transparent 1.6px
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgba(0, 220, 255, 0.05) 0 1px,
+      transparent 1px 34px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(0, 220, 255, 0.04) 0 1px,
+      transparent 1px 52px
+    );
+  background-size:
+    26px 26px,
+    auto,
+    auto;
+  mask-image: linear-gradient(
+    to right,
+    black 0%,
+    rgba(0, 0, 0, 0.55) 65%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0%,
+    rgba(0, 0, 0, 0.55) 65%,
+    transparent 100%
+  );
+}
+
+/* ===== 右側 Remote 圖案 ===== */
+
+.remotePattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    linear-gradient(
+      rgba(140, 100, 255, 0.1) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(140, 100, 255, 0.1) 1px,
+      transparent 1px
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgba(140, 100, 255, 0.06) 0 8px,
+      transparent 8px 22px
+    );
+  background-size:
+    64px 64px,
+    64px 64px,
+    auto;
+  mask-image: linear-gradient(
+    to left,
+    black 0%,
+    rgba(0, 0, 0, 0.55) 65%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to left,
+    black 0%,
+    rgba(0, 0, 0, 0.55) 65%,
+    transparent 100%
+  );
+}
+
+/* ===== 中央分界系統 ===== */
+
+.dividerSystem {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.dividerGlowLine {
+  position: absolute;
+  top: -12%;
+  bottom: -12%;
+  left: 50%;
+  width: 3px;
+  transform: translateX(-50%) rotate(9.5deg);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 220, 255, 0.6),
+    rgba(140, 100, 255, 0.6),
+    transparent
+  );
+  filter: blur(1px);
+  opacity: 0.85;
+}
+
+.dividerCore {
+  position: absolute;
+  top: -12%;
+  bottom: -12%;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%) rotate(9.5deg);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(220, 250, 255, 0.95),
+    rgba(230, 220, 255, 0.9),
+    transparent
+  );
+  box-shadow:
+    0 0 12px rgba(0, 220, 255, 0.5),
+    0 0 26px rgba(140, 100, 255, 0.32);
+}
+
+.dividerTick {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 230px;
+  height: 1px;
+  transform: translate(-50%, -50%) rotate(9.5deg);
+  display: flex;
+  justify-content: space-between;
+  opacity: 0.5;
+}
+
+.dividerTick span {
+  width: 1px;
+  height: 7px;
+  background: rgba(190, 225, 255, 0.45);
+}
+
+.dividerTick span:nth-child(odd) {
+  height: 11px;
+  background: rgba(225, 245, 255, 0.7);
+}
+
+.dividerNode {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 76px;
+  height: 76px;
+  transform: translate(-50%, -50%) rotate(9.5deg);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(150, 220, 255, 0.32);
+  background:
+    radial-gradient(
+      circle,
+      rgba(0, 220, 255, 0.12),
+      rgba(140, 100, 255, 0.1) 60%,
+      transparent 72%
+    );
+  backdrop-filter: blur(6px);
+  box-shadow:
+    0 0 22px rgba(0, 220, 255, 0.16),
+    0 0 34px rgba(140, 100, 255, 0.14);
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.35s ease;
+  animation: dividerPulse 4.5s ease-in-out infinite;
+}
+
+.dividerNodeDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #eaf6ff;
+  box-shadow:
+    0 0 10px rgba(160, 230, 255, 0.9),
+    0 0 22px rgba(140, 100, 255, 0.65);
+}
+
+.dividerLabelLeft,
+.dividerLabelRight {
+  position: absolute;
+  top: 50%;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(215, 235, 255, 0.55);
+  transform: translateY(-50%);
+}
+
+.dividerLabelLeft {
+  left: calc(50% - 104px);
+  text-align: right;
+}
+
+.dividerLabelRight {
+  left: calc(50% + 104px);
+  text-align: left;
+}
+
+/* Hover 時中央節點反應 */
+
+.chatPanel:hover ~ .dividerSystem .dividerNode {
+  border-color: rgba(0, 220, 255, 0.55);
+  box-shadow:
+    0 0 26px rgba(0, 220, 255, 0.32),
+    0 0 48px rgba(0, 220, 255, 0.16);
+}
+
+.remotePanel:hover ~ .dividerSystem .dividerNode {
+  border-color: rgba(140, 100, 255, 0.6);
+  box-shadow:
+    0 0 26px rgba(140, 100, 255, 0.32),
+    0 0 48px rgba(140, 100, 255, 0.16);
+}
+
+/* ===== 左側裝飾 ===== */
 
 .chatDecor {
   position: absolute;
@@ -157,7 +400,7 @@
   animation: scanDown 6s linear infinite;
 }
 
-/* ===== Right decorations ===== */
+/* ===== 右側裝飾 ===== */
 
 .remoteDecor {
   position: absolute;
@@ -232,7 +475,7 @@
   opacity: 1;
 }
 
-/* ===== Left content ===== */
+/* ===== 左側內容 ===== */
 
 .chatContent {
   position: relative;
@@ -250,7 +493,7 @@
   transform: translateX(0) translateY(-1vmin);
 }
 
-/* ===== Right content ===== */
+/* ===== 右側內容 ===== */
 
 .remoteContent {
   position: relative;
@@ -361,6 +604,43 @@
   transform: translateY(0);
 }
 
+/* ===== 左右底部狀態 ===== */
+
+.sideMeta {
+  position: absolute;
+  bottom: 5vh;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(210, 230, 255, 0.45);
+}
+
+.chatPanel .sideMeta {
+  left: clamp(24px, 7vw, 120px);
+}
+
+.remotePanel .sideMeta {
+  right: clamp(24px, 7vw, 120px);
+}
+
+.metaDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(150, 230, 255, 0.75);
+  box-shadow: 0 0 8px rgba(0, 220, 255, 0.7);
+  animation: metaBlink 2.4s ease-in-out infinite;
+}
+
+.remotePanel .metaDot {
+  background: rgba(200, 180, 255, 0.75);
+  box-shadow: 0 0 8px rgba(140, 100, 255, 0.7);
+}
+
 /* ===== Animations ===== */
 
 @keyframes floatSlow {
@@ -381,6 +661,34 @@
 
   100% {
     transform: translateY(110vh);
+  }
+}
+
+@keyframes dividerPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 18px rgba(0, 220, 255, 0.14),
+      0 0 28px rgba(140, 100, 255, 0.12);
+    transform: translate(-50%, -50%) rotate(9.5deg) scale(1);
+  }
+
+  50% {
+    box-shadow:
+      0 0 28px rgba(0, 220, 255, 0.24),
+      0 0 44px rgba(140, 100, 255, 0.2);
+    transform: translate(-50%, -50%) rotate(9.5deg) scale(1.04);
+  }
+}
+
+@keyframes metaBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
   }
 }
 
@@ -407,6 +715,16 @@
     clip-path: polygon(0 44%, 100% 40%, 100% 100%, 0 100%);
   }
 
+  .chatPanel::after,
+  .remotePanel::after {
+    display: none;
+  }
+
+  .chatPattern,
+  .remotePattern {
+    opacity: 0.3;
+  }
+
   .chatContent,
   .remoteContent {
     align-items: center;
@@ -420,7 +738,7 @@
     transform: translateY(-1vmin);
   }
 
-  .diagonalLine {
+  .dividerSystem {
     display: none;
   }
 
@@ -435,4 +753,214 @@
     width: 24vmin;
     height: 24vmin;
   }
+}
+/* =========================================================
+   Entrance animation
+   ========================================================= */
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes panelEnterLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-4vmin);
+    filter: brightness(1.6) blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: brightness(1) blur(0);
+  }
+}
+
+@keyframes panelEnterRight {
+  from {
+    opacity: 0;
+    transform: translateX(4vmin);
+    filter: brightness(1.6) blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: brightness(1) blur(0);
+  }
+}
+
+@keyframes dividerDraw {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) rotate(9.5deg) scaleY(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) rotate(9.5deg) scaleY(1);
+  }
+}
+
+@keyframes dividerNodeEnter {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(9.5deg) scale(0.4);
+    filter: brightness(2.2);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(9.5deg) scale(1.08);
+    filter: brightness(1.4);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(9.5deg) scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes contentEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes decorFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Page */
+.page {
+  animation: pageFadeIn 500ms ease-out both;
+}
+
+.gridBackground {
+  animation: decorFadeIn 1100ms ease-out both;
+}
+
+/* Panels */
+.chatPanel {
+  animation: panelEnterLeft 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.remotePanel {
+  animation: panelEnterRight 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 100ms;
+}
+
+/* Panel decorations */
+.chatDecor,
+.remoteDecor {
+  animation: decorFadeIn 1000ms ease-out both;
+  animation-delay: 180ms;
+}
+
+.panelGlow {
+  animation: decorFadeIn 900ms ease-out both;
+  animation-delay: 320ms;
+}
+
+/* Divider system */
+.dividerGlowLine,
+.dividerCore {
+  animation: dividerDraw 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 260ms;
+}
+
+.dividerTick {
+  animation: pageFadeIn 700ms ease-out both;
+  animation-delay: 520ms;
+}
+
+.dividerNode {
+  animation:
+    dividerNodeEnter 850ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    dividerPulse 4.5s ease-in-out 1100ms infinite;
+  animation-delay: 620ms, 1470ms;
+}
+
+.dividerLabelLeft,
+.dividerLabelRight {
+  animation: pageFadeIn 700ms ease-out both;
+  animation-delay: 760ms;
+}
+
+/* Left content */
+.chatContent {
+  animation: contentEnter 750ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 320ms;
+}
+
+.chatContent .iconShell {
+  animation: contentEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 420ms;
+}
+
+.chatContent .panelTitle {
+  animation: contentEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 500ms;
+}
+
+.chatContent .panelDescription {
+  animation: contentEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 580ms;
+}
+
+.chatContent .panelHint {
+  animation: contentEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 660ms;
+}
+
+/* Right content */
+.remoteContent {
+  animation: contentEnter 750ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 420ms;
+}
+
+.remoteContent .iconShell {
+  animation: contentEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 520ms;
+}
+
+.remoteContent .panelTitle {
+  animation: contentEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 600ms;
+}
+
+.remoteContent .panelDescription {
+  animation: contentEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 680ms;
+}
+
+.remoteContent .panelHint {
+  animation: contentEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 760ms;
+}
+
+/* Side metadata */
+.chatPanel .sideMeta {
+  animation: pageFadeIn 800ms ease-out both;
+  animation-delay: 820ms;
+}
+
+.remotePanel .sideMeta {
+  animation: pageFadeIn 800ms ease-out both;
+  animation-delay: 900ms;
 }
