@@ -1,12 +1,12 @@
 /* ===== Layout ===== */
 
 .layout {
+  --header-height: clamp(52px, 7vh, 72px);
   background: transparent !important;
 }
 
 .content {
-  height: calc(100vh - 72px);
-  height: calc(100dvh - 72px);
+  height: calc(100dvh - var(--header-height));
   background: transparent !important;
 }
 
@@ -24,8 +24,8 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  height: 72px;
-  padding: 0 clamp(16px, 3vw, 40px);
+  height: var(--header-height);
+  padding: 0 clamp(10px, 3vw, 40px);
   background:
     linear-gradient(
       90deg,
@@ -82,9 +82,10 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: clamp(6px, 1vw, 12px);
   margin-right: auto;
   margin-left: 0;
+  min-width: 0;
   text-decoration: none;
   color: inherit;
   transition: opacity 0.2s ease;
@@ -98,9 +99,10 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
+  flex-shrink: 0;
+  width: clamp(30px, 4.5vh, 42px);
+  height: clamp(30px, 4.5vh, 42px);
+  border-radius: clamp(9px, 1.2vh, 12px);
   background:
     linear-gradient(
       135deg,
@@ -116,7 +118,7 @@
 .logoIcon {
   position: relative;
   z-index: 2;
-  font-size: 22px;
+  font-size: clamp(16px, 2.4vh, 22px);
   color: #9be8ff;
   filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.65));
 }
@@ -145,22 +147,29 @@
   display: flex;
   flex-direction: column;
   line-height: 1.1;
+  min-width: 0;
 }
 
 .logoTitle {
   margin: 0 !important;
   color: white !important;
-  font-size: 20px !important;
+  font-size: clamp(15px, 2.2vh, 20px) !important;
   font-weight: 700 !important;
-  letter-spacing: 2px;
+  letter-spacing: clamp(1px, 0.2vw, 2px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .logoSubtitle {
   margin-top: 2px;
-  font-size: 10px;
-  letter-spacing: 1.5px;
+  font-size: clamp(8px, 1.1vh, 10px);
+  letter-spacing: clamp(0.8px, 0.15vw, 1.5px);
   text-transform: uppercase;
   color: rgba(150, 200, 255, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ===== Right ===== */
@@ -169,21 +178,22 @@
   display: flex;
   align-items: center;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .systemTag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 26px;
-  padding: 0 10px;
+  gap: clamp(4px, 0.6vw, 6px);
+  height: clamp(20px, 3vh, 26px);
+  padding: 0 clamp(6px, 0.9vw, 10px);
   border-radius: 999px;
   border: 1px solid rgba(0, 255, 170, 0.22);
   background: rgba(0, 255, 170, 0.07);
   color: rgba(120, 255, 210, 0.9);
-  font-size: 10px;
+  font-size: clamp(8px, 1.1vh, 10px);
   font-weight: 600;
-  letter-spacing: 1.2px;
+  letter-spacing: clamp(0.6px, 0.12vw, 1.2px);
   line-height: 1;
   white-space: nowrap;
   box-shadow:
@@ -192,8 +202,8 @@
 }
 
 .statusDot {
-  width: 6px;
-  height: 6px;
+  width: clamp(4px, 0.7vh, 6px);
+  height: clamp(4px, 0.7vh, 6px);
   border-radius: 50%;
   background: #00ffb0;
   box-shadow: 0 0 8px rgba(0, 255, 170, 0.85);
@@ -211,41 +221,300 @@
   }
 }
 
-/* ===== Responsive ===== */
+/* ===== Layout ===== */
 
-@media (max-width: 768px) {
+.layout {
+  --header-height: clamp(52px, 7vh, 72px);
+  background: transparent !important;
+}
+
+.content {
+  height: calc(100dvh - var(--header-height));
+  background: transparent !important;
+}
+
+/* 強制 Ant Design Layout / Content 透明 */
+.layout :global(.ant-layout),
+.layout :global(.ant-layout-content) {
+  background: transparent !important;
+}
+
+/* ===== Header ===== */
+
+.header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: var(--header-height);
+  padding: 0 clamp(10px, 3vw, 40px);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(7, 12, 26, 0.94),
+      rgba(10, 18, 45, 0.88) 48%,
+      rgba(14, 11, 34, 0.92)
+    );
+  border-bottom: 1px solid rgba(120, 180, 255, 0.14);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Header 頂部青紫光線 */
+.header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 220, 255, 0.55),
+    rgba(140, 100, 255, 0.45),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Header 底部微光 */
+.header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 220, 255, 0.28),
+    rgba(140, 100, 255, 0.22),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* ===== Brand ===== */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1vw, 12px);
+  margin-right: auto;
+  margin-left: 0;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.brand:hover {
+  opacity: 0.88;
+}
+
+.logoMark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: clamp(30px, 4.5vh, 42px);
+  height: clamp(30px, 4.5vh, 42px);
+  border-radius: clamp(9px, 1.2vh, 12px);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(0, 255, 255, 0.18),
+      rgba(120, 90, 255, 0.18)
+    );
+  border: 1px solid rgba(120, 220, 255, 0.28);
+  box-shadow:
+    0 0 18px rgba(0, 210, 255, 0.16),
+    inset 0 0 12px rgba(120, 180, 255, 0.12);
+}
+
+.logoIcon {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(16px, 2.4vh, 22px);
+  color: #9be8ff;
+  filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.65));
+}
+
+.logoGlow {
+  position: absolute;
+  inset: -3px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 220, 255, 0.2);
+  animation: logoPulse 3s ease-out infinite;
+}
+
+@keyframes logoPulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.75;
+  }
+
+  100% {
+    transform: scale(1.16);
+    opacity: 0;
+  }
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  min-width: 0;
+}
+
+.logoTitle {
+  margin: 0 !important;
+  color: white !important;
+  font-size: clamp(15px, 2.2vh, 20px) !important;
+  font-weight: 700 !important;
+  letter-spacing: clamp(1px, 0.2vw, 2px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logoSubtitle {
+  margin-top: 2px;
+  font-size: clamp(8px, 1.1vh, 10px);
+  letter-spacing: clamp(0.8px, 0.15vw, 1.5px);
+  text-transform: uppercase;
+  color: rgba(150, 200, 255, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== Right ===== */
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.systemTag {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(4px, 0.6vw, 6px);
+  height: clamp(20px, 3vh, 26px);
+  padding: 0 clamp(6px, 0.9vw, 10px);
+  border-radius: 999px;
+  border: 1px solid rgba(0, 255, 170, 0.22);
+  background: rgba(0, 255, 170, 0.07);
+  color: rgba(120, 255, 210, 0.9);
+  font-size: clamp(8px, 1.1vh, 10px);
+  font-weight: 600;
+  letter-spacing: clamp(0.6px, 0.12vw, 1.2px);
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow:
+    0 0 10px rgba(0, 255, 170, 0.1),
+    inset 0 0 8px rgba(0, 255, 170, 0.06);
+}
+
+.statusDot {
+  width: clamp(4px, 0.7vh, 6px);
+  height: clamp(4px, 0.7vh, 6px);
+  border-radius: 50%;
+  background: #00ffb0;
+  box-shadow: 0 0 8px rgba(0, 255, 170, 0.85);
+  animation: statusBlink 1.8s ease-in-out infinite;
+}
+
+@keyframes statusBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .layout {
+    --header-height: clamp(42px, 10vh, 52px);
+  }
+
   .header {
-    height: 64px;
-    padding: 0 12px;
+    padding: 0 10px;
+    gap: 8px;
+  }
+
+  .brand {
+    gap: 7px;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .logoMark {
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
   }
 
   .logoIcon {
-    font-size: 19px;
+    font-size: 14px;
+  }
+
+  .brandText {
+    gap: 1px;
   }
 
   .logoTitle {
-    font-size: 17px !important;
+    font-size: 14px !important;
+    letter-spacing: 0.8px;
+    line-height: 1;
   }
 
   .logoSubtitle {
     display: none;
   }
 
+  .headerRight {
+    flex: 0 0 auto;
+  }
+
   .systemTag {
-    height: 24px;
+    height: 22px;
     padding: 0 8px;
-    font-size: 9px;
+    font-size: 8px;
     letter-spacing: 0.8px;
     gap: 5px;
+    white-space: nowrap;
   }
 
   .statusDot {
     width: 5px;
     height: 5px;
+  }
+}
+
+/* 特別矮的橫屏：保留狀態點，但隱藏文字 */
+@media (max-width: 768px) and (orientation: landscape) and (max-height: 380px) {
+  .systemTag {
+    width: 22px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+    font-size: 0;
+  }
+
+  .statusDot {
+    width: 6px;
+    height: 6px;
   }
 }

@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Typography } from "antd";
-import { Joystick } from "react-joystick-component";
 
+import { CameraFeed } from "../../components/camera/CameraFeed";
+import { JoystickControl } from "../../components/joystick/JoystickControl";
 import { StatusLight } from "../../components/status-light/StatusLight";
+
+import { useKeyboardJoystick } from "../../hooks/useKeyboardJoystick";
 
 import type {
   LeftDirection,
@@ -13,12 +16,12 @@ import styles from "./RemotePage.module.css";
 
 const { Title } = Typography;
 
-type JoystickEvent = {
-  direction?: "FORWARD" | "BACKWARD" | "LEFT" | "RIGHT";
-};
+type Direction = "FORWARD" | "BACKWARD" | "LEFT" | "RIGHT";
+
+const CAMERA_STREAM_URL =
+  import.meta.env.VITE_CAMERA_STREAM_URL ?? "";
 
 export function RemotePage() {
-  // 測試用：改成 false 可測試解鎖
   const [lock, setLock] = useState(true);
 
   const [leftDirection, setLeftDirection] =
@@ -27,103 +30,97 @@ export function RemotePage() {
   const [rightDirection, setRightDirection] =
     useState<RightDirection>("");
 
-  const mapLeftDirection = (
-    direction?: "FORWARD" | "BACKWARD" | "LEFT" | "RIGHT",
-  ): LeftDirection => {
-    if (direction === "FORWARD") return "W";
-    if (direction === "BACKWARD") return "S";
-    if (direction === "LEFT") return "A";
-    if (direction === "RIGHT") return "D";
-    return "";
-  };
+  const handleLeftMove = useCallback(
+    (direction: Direction | "") => {
+      setLeftDirection(direction as LeftDirection);
 
-  const mapRightDirection = (
-    direction?: "FORWARD" | "BACKWARD" | "LEFT" | "RIGHT",
-  ): RightDirection => {
-    if (direction === "FORWARD") return "I";
-    if (direction === "BACKWARD") return "K";
-    if (direction === "LEFT") return "J";
-    if (direction === "RIGHT") return "L";
-    return "";
-  };
+      if (!lock && direction) {
+        console.log("SEND:", {
+          type: "joystick",
+          left: direction,
+          right: rightDirection,
+        });
+      }
+    },
+    [lock, rightDirection],
+  );
 
-  const handleLeftMove = (event: JoystickEvent) => {
-    const direction = mapLeftDirection(event.direction);
-    setLeftDirection(direction);
+  const handleRightMove = useCallback(
+    (direction: Direction | "") => {
+      setRightDirection(direction as RightDirection);
 
-    // lock 時只更新 UI，不發送
-    if (!lock) {
-      console.log("SEND:", {
-        type: "joystick",
-        left: direction,
-        right: rightDirection,
-      });
-    }
-  };
+      if (!lock && direction) {
+        console.log("SEND:", {
+          type: "joystick",
+          left: leftDirection,
+          right: direction,
+        });
+      }
+    },
+    [lock, leftDirection],
+  );
 
-  const handleRightMove = (event: JoystickEvent) => {
-    const direction = mapRightDirection(event.direction);
-    setRightDirection(direction);
-
-    if (!lock) {
-      console.log("SEND:", {
-        type: "joystick",
-        left: leftDirection,
-        right: direction,
-      });
-    }
-  };
+  useKeyboardJoystick({
+    onLeftChange: handleLeftMove,
+    onRightChange: handleRightMove,
+  });
 
   return (
     <div className={styles.page}>
-      <StatusLight locked={lock} />
+      <div className={styles.backgroundGlow} />
+      <div className={styles.backgroundGrid} />
 
-      <Title level={3} className={styles.title}>
-        Remote Control
-      </Title>
-
-      <div className={styles.joystickLayer}>
-        <div className={styles.joystickGroup}>
-          <span className={styles.joystickLabel}>LEFT</span>
-
-          <Joystick
-            size={150}
-            sticky={false}
-            baseColor="rgba(255, 255, 255, 0.12)"
-            stickColor="rgba(255, 255, 255, 0.38)"
-            move={handleLeftMove}
-            stop={() => setLeftDirection("")}
-          />
-
-          <span className={styles.directionValue}>
-            {leftDirection || "-"}
-          </span>
+      <header className={styles.pageHeader}>
+        <div className={styles.headerSide}>
+          <StatusLight locked={lock} />
         </div>
 
-        <div className={styles.joystickGroup}>
-          <span className={styles.joystickLabel}>RIGHT</span>
-
-          <Joystick
-            size={150}
-            sticky={false}
-            baseColor="rgba(255, 255, 255, 0.12)"
-            stickColor="rgba(255, 255, 255, 0.38)"
-            move={handleRightMove}
-            stop={() => setRightDirection("")}
-          />
-
-          <span className={styles.directionValue}>
-            {rightDirection || "-"}
+        <div className={styles.titleGroup}>
+          <span className={styles.titleTag}>
+            ROBOT CONTROL SYSTEM
           </span>
-        </div>
-      </div>
 
-      <button
-        className={styles.testLockButton}
-        onClick={() => setLock((previous) => !previous)}
-      >
-        {lock ? "Unlock（測試）" : "Lock（測試）"}
-      </button>
+          <Title level={2} className={styles.title}>
+            REMOTE CONTROL
+          </Title>
+
+          <div className={styles.titleDivider}>
+            <span />
+            <span />
+            <span />
+          </div>
+        </div>
+      </header>
+
+      <main className={styles.content}>
+        <div className={styles.joystickColumn}>
+          <JoystickControl
+            label="LEFT"
+            side="left"
+            value={leftDirection as Direction | ""}
+            onMove={handleLeftMove}
+            onStop={() => handleLeftMove("")}
+          />
+        </div>
+
+        <section className={styles.cameraColumn}>
+          <CameraFeed
+            title="FRONT CAMERA"
+            streamUrl={CAMERA_STREAM_URL || undefined}
+            className={styles.cameraFeed}
+          />
+        </section>
+
+        <div className={styles.joystickColumn}>
+          <JoystickControl
+            label="RIGHT"
+            side="right"
+            value={rightDirection as Direction | ""}
+            onMove={handleRightMove}
+            onStop={() => handleRightMove("")}
+          />
+        </div>
+      </main>
     </div>
   );
 }

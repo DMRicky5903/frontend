@@ -1,0 +1,403 @@
+.cameraPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: clamp(6px, 1.2vw, 12px);
+  padding: clamp(8px, 1.6vw, 16px);
+  border: 1px solid rgba(120, 220, 255, 0.18);
+  border-radius: clamp(10px, 1.8vw, 18px);
+  background:
+    linear-gradient(
+      160deg,
+      rgba(8, 14, 28, 0.92),
+      rgba(10, 18, 41, 0.88)
+    );
+  box-shadow:
+    inset 0 0 30px rgba(0, 180, 255, 0.06),
+    0 18px 45px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  min-width: 0;
+  min-height: 0;
+}
+
+.cameraHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1vw, 10px);
+  min-width: 0;
+}
+
+.cameraIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: clamp(20px, 2.4vw, 30px);
+  height: clamp(20px, 2.4vw, 30px);
+  border-radius: clamp(6px, 0.8vw, 9px);
+  color: rgba(150, 240, 255, 0.95);
+  background: rgba(0, 220, 255, 0.1);
+  border: 1px solid rgba(120, 220, 255, 0.22);
+}
+
+.cameraTitle {
+  font-size: clamp(9px, 1vw, 12px);
+  font-weight: 700;
+  letter-spacing: clamp(1.5px, 0.25vw, 3px);
+  color: rgba(190, 225, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusPill {
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 0.6vw, 7px);
+  padding: clamp(2px, 0.4vw, 5px) clamp(6px, 0.9vw, 11px);
+  border-radius: 999px;
+  font-size: clamp(8px, 0.9vw, 11px);
+  font-weight: 700;
+  letter-spacing: clamp(0.8px, 0.15vw, 1.5px);
+  flex-shrink: 0;
+}
+
+.statusDot {
+  width: clamp(4px, 0.6vw, 7px);
+  height: clamp(4px, 0.6vw, 7px);
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.statusOnline {
+  color: #52f5a5;
+  background: rgba(82, 245, 165, 0.1);
+  border: 1px solid rgba(82, 245, 165, 0.3);
+}
+
+.statusConnecting {
+  color: #7cc4ff;
+  background: rgba(124, 196, 255, 0.1);
+  border: 1px solid rgba(124, 196, 255, 0.3);
+}
+
+.statusOffline {
+  color: #ff7a7a;
+  background: rgba(255, 122, 122, 0.1);
+  border: 1px solid rgba(255, 122, 122, 0.3);
+}
+
+.cameraViewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: clamp(8px, 1.4vw, 14px);
+  border: 1px solid rgba(120, 220, 255, 0.14);
+  background: #04070f;
+}
+
+.cameraStream {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.offlineArt {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(0, 180, 255, 0.12),
+      transparent 55%
+    ),
+    linear-gradient(160deg, #04070f, #081227);
+}
+
+.offlineGrid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(120, 220, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 220, 255, 0.07) 1px, transparent 1px);
+  background-size: clamp(22px, 3vw, 34px) clamp(22px, 3vw, 34px);
+  mask-image: radial-gradient(circle at center, black, transparent 72%);
+}
+
+.offlineScanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: clamp(50px, 10vh, 90px);
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(0, 220, 255, 0.1),
+    transparent
+  );
+  animation: scan 3.6s linear infinite;
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-100px);
+  }
+
+  100% {
+    transform: translateY(120%);
+  }
+}
+
+.offlineContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1vw, 10px);
+  text-align: center;
+  padding: clamp(12px, 2vw, 24px);
+}
+
+.offlineIcon {
+  display: grid;
+  place-items: center;
+  width: clamp(36px, 5vw, 58px);
+  height: clamp(36px, 5vw, 58px);
+  border-radius: 50%;
+  color: rgba(170, 235, 255, 0.95);
+  font-size: clamp(16px, 2vw, 24px);
+  background: rgba(0, 220, 255, 0.08);
+  border: 1px solid rgba(120, 220, 255, 0.25);
+  box-shadow: 0 0 22px rgba(0, 220, 255, 0.16);
+}
+
+.offlineTitle {
+  margin: 0;
+  color: rgba(225, 245, 255, 0.95);
+  font-size: clamp(12px, 1.6vw, 18px);
+  letter-spacing: clamp(2px, 0.4vw, 4px);
+}
+
+.offlineDescription {
+  margin: 0;
+  max-width: min(280px, 80%);
+  color: rgba(170, 205, 235, 0.65);
+  font-size: clamp(9px, 1.1vw, 12px);
+  line-height: 1.5;
+}
+
+.retryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(5px, 0.7vw, 8px);
+  margin-top: clamp(2px, 0.5vw, 6px);
+  padding: clamp(5px, 0.8vw, 8px) clamp(9px, 1.2vw, 15px);
+  border: 1px solid rgba(120, 220, 255, 0.35);
+  border-radius: clamp(7px, 0.9vw, 10px);
+  background: rgba(0, 220, 255, 0.1);
+  color: rgba(220, 245, 255, 0.95);
+  font-size: clamp(9px, 1vw, 12px);
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.retryButton:hover {
+  background: rgba(0, 220, 255, 0.2);
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 0.9vw, 10px);
+  background: rgba(4, 7, 15, 0.72);
+  color: rgba(190, 235, 255, 0.9);
+  font-size: clamp(9px, 1vw, 12px);
+  letter-spacing: 1.5px;
+  padding: 8px;
+  text-align: center;
+}
+
+.loadingIcon {
+  font-size: clamp(14px, 1.6vw, 18px);
+  color: rgba(120, 220, 255, 0.95);
+}
+
+.viewportCornerTopLeft,
+.viewportCornerTopRight,
+.viewportCornerBottomLeft,
+.viewportCornerBottomRight {
+  position: absolute;
+  width: clamp(10px, 1.6vw, 18px);
+  height: clamp(10px, 1.6vw, 18px);
+  border-color: rgba(120, 220, 255, 0.55);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+
+.viewportCornerTopLeft {
+  top: clamp(5px, 0.9vw, 10px);
+  left: clamp(5px, 0.9vw, 10px);
+  border-top-width: 2px;
+  border-left-width: 2px;
+  border-top-left-radius: 6px;
+}
+
+.viewportCornerTopRight {
+  top: clamp(5px, 0.9vw, 10px);
+  right: clamp(5px, 0.9vw, 10px);
+  border-top-width: 2px;
+  border-right-width: 2px;
+  border-top-right-radius: 6px;
+}
+
+.viewportCornerBottomLeft {
+  bottom: clamp(5px, 0.9vw, 10px);
+  left: clamp(5px, 0.9vw, 10px);
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+  border-bottom-left-radius: 6px;
+}
+
+.viewportCornerBottomRight {
+  bottom: clamp(5px, 0.9vw, 10px);
+  right: clamp(5px, 0.9vw, 10px);
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+  border-bottom-right-radius: 6px;
+}
+
+.cameraFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+  color: rgba(150, 190, 220, 0.55);
+  font-size: clamp(7px, 0.85vw, 10px);
+  letter-spacing: clamp(0.8px, 0.2vw, 2px);
+}
+
+.cameraFooter span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .cameraPanel {
+    gap: 4px;
+    padding: 6px 8px;
+    border-radius: 10px;
+  }
+
+  .cameraHeader {
+    gap: 6px;
+  }
+
+  .headerLeft {
+    gap: 5px;
+  }
+
+  .cameraIcon {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+  }
+
+  .cameraTitle {
+    font-size: 8px;
+    letter-spacing: 1.2px;
+  }
+
+  .statusPill {
+    padding: 2px 6px;
+    font-size: 7px;
+    letter-spacing: 0.6px;
+    gap: 3px;
+  }
+
+  .statusDot {
+    width: 4px;
+    height: 4px;
+  }
+
+  .cameraFooter {
+    font-size: 6px;
+    letter-spacing: 0.6px;
+  }
+
+  .viewportCornerTopLeft,
+  .viewportCornerTopRight,
+  .viewportCornerBottomLeft,
+  .viewportCornerBottomRight {
+    width: 8px;
+    height: 8px;
+  }
+
+  .viewportCornerTopLeft {
+    top: 4px;
+    left: 4px;
+  }
+
+  .viewportCornerTopRight {
+    top: 4px;
+    right: 4px;
+  }
+
+  .viewportCornerBottomLeft {
+    bottom: 4px;
+    left: 4px;
+  }
+
+  .viewportCornerBottomRight {
+    bottom: 4px;
+    right: 4px;
+  }
+
+  .offlineIcon {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .offlineTitle {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+  }
+
+  .offlineDescription {
+    font-size: 8px;
+    max-width: 180px;
+  }
+
+  .retryButton {
+    padding: 4px 8px;
+    font-size: 8px;
+    gap: 4px;
+  }
+}
+.cameraPanel {
+  container-type: inline-size;
+}
