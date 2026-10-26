@@ -11,3 +11,8 @@ export type StatusMessage = {
   type: "status";
   lock: boolean;
 };
+
+export type TextMessage = {
+  type: "text";
+  text: string;
+};
