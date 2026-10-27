@@ -1,18 +1,16 @@
-//src/pages/remote/RemotePage.tsx
-
 import { useCallback, useState } from "react";
 import { Typography } from "antd";
 
-import { CameraFeed } from "../../components/camera/CameraFeed";
-import { JoystickControl } from "../../components/joystick/JoystickControl";
-import { StatusLight } from "../../components/status-light/StatusLight";
+import { CameraFeed } from "../../features/robot-control/components/camera/CameraFeed";
+import { JoystickControl } from "../../features/robot-control/components/joystick/JoystickControl";
+import { StatusLight } from "../../features/robot-control/components/status-light/StatusLight";
 
-import { useKeyboardJoystick } from "../../hooks/useKeyboardJoystick";
+import { useKeyboardJoystick } from "../../features/robot-control/hooks/useKeyboardJoystick";
 
 import type {
   WheelDirection,
   GimbalDirection,
-} from "../../types/messages";
+} from "../../api/messages";
 
 import styles from "./RemotePage.module.css";
 

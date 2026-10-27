@@ -1,5 +1,3 @@
-//src/pages/home/HomePage.tsx
-
 import { Link } from "react-router";
 import { Typography } from "antd";
 import {

@@ -1,13 +1,13 @@
 import { createBrowserRouter } from "react-router";
 
-import { AppHeader } from "./components/layout/AppHeader";
-import { RequireLandscapeOutlet } from "./components/layout/RequireLandscapeOutlet";
+import { AppHeader } from "./layouts//AppHeader";
+import { RequireLandscapeOutlet } from "./layouts/RequireLandscapeOutlet";
 
-import { HomePage } from "./pages/home/HomePage";
-import { ChatPage } from "./pages/chat/ChatPage";
-import { RemotePage } from "./pages/remote/RemotePage";
-import { OrientationPage } from "./pages/orientation/OrientationPage";
-import { NotFoundPage } from "./pages/not-found/NotFoundPage";
+import { HomePage } from "../pages/home/HomePage";
+import { ChatPage } from "../pages/chat/ChatPage";
+import { RemotePage } from "../pages/remote/RemotePage";
+import { OrientationPage } from "../pages/orientation/OrientationPage";
+import { NotFoundPage } from "../pages/not-found/NotFoundPage";
 
 export const router = createBrowserRouter([
   {

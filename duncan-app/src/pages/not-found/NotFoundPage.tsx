@@ -1,5 +1,3 @@
-//src/pages/not-found/NotFoundPage.tsx
-
 import { useNavigate } from "react-router";
 import { Button, Result, Typography } from "antd";
 import { RadarChartOutlined } from "@ant-design/icons";

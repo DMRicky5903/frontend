@@ -1,9 +1,9 @@
 import { Button, Typography } from "antd";
 import { ClearOutlined } from "@ant-design/icons";
 
-import { useChat } from "../../hooks/useChat";
-import { ChatInput } from "../../components/chat-input/ChatInput";
-import { MessageList } from "../../components/message-list/MessageList";
+import { useChat } from "../../features/chat/hooks/useChat";
+import { ChatInput } from "../../features/chat/components/chat-input/ChatInput";
+import { MessageList } from "../../features/chat/components/message-list/MessageList";
 import styles from "./ChatPage.module.css";
 
 const { Title } = Typography;

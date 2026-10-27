@@ -1,10 +1,8 @@
-//src/pages/orientation/OrientationPage.tsx
-
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { Typography } from "antd";
 
-import { useOrientation } from "../../hooks/useOrientation";
+import { useOrientation } from "../../app/layouts/hooks/useOrientation";
 
 import styles from "./OrientationPage.module.css";
 
