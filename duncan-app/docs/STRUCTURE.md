@@ -5,8 +5,10 @@
 ```text
 src/
 ├── api
-│   ├── RobotSocketClient.ts
-│   └── robotSocketProtocol.ts
+│   ├── type.ts
+│   ├── useWebSocket.ts
+│   ├── WebSocketClient.ts
+│   └── WebSocketProvider.tsx
 ├── app
 │   ├── layouts
 │   │   ├── hooks
@@ -16,7 +18,6 @@ src/
 │   │   └── RequireLandscapeOutlet.tsx
 │   ├── App.tsx
 │   ├── main.tsx
-│   ├── RobotSocketProvider.tsx
 │   └── router.tsx
 ├── features
 │   ├── chat

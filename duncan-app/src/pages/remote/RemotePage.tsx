@@ -10,7 +10,7 @@ import { useKeyboardJoystick } from "../../features/robot-control/hooks/useKeybo
 import type {
   WheelDirection,
   GimbalDirection,
-} from "../../api/robotSocketProtocol";
+} from "../../api/type";
 
 import styles from "./RemotePage.module.css";
 

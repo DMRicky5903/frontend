@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 
-import { useOrientation } from "./hooks/useOrientation";
+import { useOrientation } from "./useOrientation";
 
 export function RequireLandscapeOutlet() {
   const { isLandscape } = useOrientation();

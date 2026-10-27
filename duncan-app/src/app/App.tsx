@@ -1,9 +1,14 @@
+// src/app/App.tsx
 import { RouterProvider } from "react-router";
 import { ConfigProvider, theme } from "antd";
 
+import { WebSocketProvider } from "../api/WebSocketProvider";
 import { router } from "./router";
 
 import "../index.css";
+
+const websocketUrl =
+  import.meta.env.VITE_WS_URL ?? "ws://localhost:8080/ws";
 
 export default function App() {
   return (
@@ -17,7 +22,9 @@ export default function App() {
         },
       }}
     >
-      <RouterProvider router={router} />
+      <WebSocketProvider url={websocketUrl}>
+        <RouterProvider router={router} />
+      </WebSocketProvider>
     </ConfigProvider>
   );
 }

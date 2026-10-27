@@ -1,7 +1,7 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Outlet } from "react-router";
 
-import { AppHeader } from "./layouts//AppHeader";
-import { RequireLandscapeOutlet } from "./layouts/RequireLandscapeOutlet";
+import { AppHeader } from "./layouts/AppHeader";
+import { RequireLandscapeOutlet } from "../app/layouts/RequireLandscapeOutlet";
 
 import { HomePage } from "../pages/home/HomePage";
 import { ChatPage } from "../pages/chat/ChatPage";
@@ -19,12 +19,12 @@ export const router = createBrowserRouter([
     element: <AppHeader />,
     children: [
       {
+        index: true,
+        element: <HomePage />,
+      },
+      {
         element: <RequireLandscapeOutlet />,
         children: [
-          {
-            index: true,
-            element: <HomePage />,
-          },
           {
             path: "chat",
             element: <ChatPage />,
@@ -33,11 +33,11 @@ export const router = createBrowserRouter([
             path: "remote",
             element: <RemotePage />,
           },
-          {
-            path: "*",
-            element: <NotFoundPage />,
-          },
         ],
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
   },
