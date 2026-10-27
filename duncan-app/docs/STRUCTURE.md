@@ -11,11 +11,10 @@ src/
 │   └── WebSocketProvider.tsx
 ├── app
 │   ├── layouts
-│   │   ├── hooks
-│   │   │   └── useOrientation.ts
 │   │   ├── AppHeader.module.css
 │   │   ├── AppHeader.tsx
-│   │   └── RequireLandscapeOutlet.tsx
+│   │   ├── RequireLandscapeOutlet.tsx
+│   │   └── useOrientation.ts
 │   ├── App.tsx
 │   ├── main.tsx
 │   └── router.tsx

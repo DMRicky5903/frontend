@@ -4,6 +4,7 @@ import { Typography } from "antd";
 import { CameraFeed } from "../../features/robot-control/components/camera/CameraFeed";
 import { JoystickControl } from "../../features/robot-control/components/joystick/JoystickControl";
 import { StatusLight } from "../../features/robot-control/components/status-light/StatusLight";
+import { SlamRadarMinimap } from "../../features/robot-control/components/slam-map/SlamRadarMinimap";
 
 import { useKeyboardJoystick } from "../../features/robot-control/hooks/useKeyboardJoystick";
 
@@ -69,6 +70,9 @@ export function RemotePage() {
     <div className={styles.page}>
       <div className={styles.backgroundGlow} />
       <div className={styles.backgroundGrid} />
+
+      {/* SLAM 雷達小地圖：右上角 */}
+      <SlamRadarMinimap />
 
       <header className={styles.pageHeader}>
         <div className={styles.headerSide}>

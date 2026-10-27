@@ -1,0 +1,98 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(2, 6, 16, 0.28);
+
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+
+.panel {
+  display: flex;
+  flex-direction: column;
+
+  width: min(94vw, 980px);
+  height: min(88vh, 720px);
+
+  border-radius: 16px;
+  overflow: hidden;
+
+  background: rgba(6, 12, 26, 0.92);
+  border: 1px solid rgba(0, 220, 255, 0.22);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(0, 220, 255, 0.16);
+}
+
+.title {
+  color: rgba(190, 245, 255, 0.9);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+.closeButton {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(0, 220, 255, 0.28);
+  border-radius: 10px;
+
+  background: rgba(0, 220, 255, 0.08);
+  color: rgba(220, 250, 255, 0.9);
+
+  cursor: pointer;
+}
+
+.mapContainer {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 16px;
+}
+
+.mapCanvas {
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+  cursor: crosshair;
+
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.emptyMap {
+  position: absolute;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: rgba(150, 220, 255, 0.55);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
