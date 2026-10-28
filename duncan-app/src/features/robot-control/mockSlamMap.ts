@@ -1,7 +1,7 @@
 import type {
   SlamMapMessage,
   SlamPoseMessage,
-} from "../../../api/type";
+} from "../../api/type";
 
 // =========================================================
 // 測試用假 SLAM 地圖

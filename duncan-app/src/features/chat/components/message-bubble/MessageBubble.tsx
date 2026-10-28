@@ -34,6 +34,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             <Spin size="small" />
             <Text type="secondary">Thinking…</Text>
           </div>
+        ) : message.error ? (
+          <Text type="danger" className={styles.content}>
+            {message.error}
+          </Text>
         ) : (
           <Text className={styles.content}>{message.content}</Text>
         )}

@@ -2,13 +2,17 @@ import { Button, Typography } from "antd";
 import { ClearOutlined } from "@ant-design/icons";
 
 import { useChat } from "../../features/chat/hooks/useChat";
+import { useControlPermission } from "../../api/useControlPermission";
 import { ChatInput } from "../../features/chat/components/chat-input/ChatInput";
 import { MessageList } from "../../features/chat/components/message-list/MessageList";
+
 import styles from "./ChatPage.module.css";
 
 const { Title } = Typography;
 
 export function ChatPage() {
+  const { canSend } = useControlPermission(0);
+
   const {
     messages,
     inputValue,
@@ -16,7 +20,7 @@ export function ChatPage() {
     setInputValue,
     sendMessage,
     clearChat,
-  } = useChat();
+  } = useChat({ canSend });
 
   return (
     <>
@@ -51,7 +55,6 @@ export function ChatPage() {
             Clear
           </Button>
         </header>
-
 
         <main className={styles.chatPanel}>
           <MessageList messages={messages} />

@@ -18,6 +18,7 @@
   backdrop-filter: blur(12px);
   min-width: 0;
   min-height: 0;
+  container-type: inline-size;
 }
 
 .cameraHeader {
@@ -220,24 +221,21 @@
   background: rgba(0, 220, 255, 0.2);
 }
 
-.loadingOverlay {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
+.connectingHint {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(6px, 0.9vw, 10px);
-  background: rgba(4, 7, 15, 0.72);
-  color: rgba(190, 235, 255, 0.9);
-  font-size: clamp(9px, 1vw, 12px);
-  letter-spacing: 1.5px;
-  padding: 8px;
+  gap: clamp(5px, 0.7vw, 8px);
+  margin-top: clamp(4px, 0.8vw, 8px);
+  color: rgba(190, 235, 255, 0.8);
+  font-size: clamp(8px, 0.9vw, 11px);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
   text-align: center;
 }
 
 .loadingIcon {
-  font-size: clamp(14px, 1.6vw, 18px);
+  font-size: clamp(12px, 1.4vw, 16px);
   color: rgba(120, 220, 255, 0.95);
 }
 
@@ -303,7 +301,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 
 @media (max-width: 900px) and (orientation: landscape) {
   .cameraPanel {
@@ -397,7 +394,15 @@
     font-size: 8px;
     gap: 4px;
   }
-}
-.cameraPanel {
-  container-type: inline-size;
+
+  .connectingHint {
+    margin-top: 4px;
+    font-size: 7px;
+    letter-spacing: 0.8px;
+    gap: 4px;
+  }
+
+  .loadingIcon {
+    font-size: 10px;
+  }
 }

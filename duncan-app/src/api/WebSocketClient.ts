@@ -1,4 +1,3 @@
-// src/api/WebSocketClient.ts
 import type {
   CameraFrame,
   ClientMessage,
@@ -9,11 +8,13 @@ import type {
 type JsonHandler = (message: JsonServerMessage) => void;
 type BinaryHandler = (frame: CameraFrame) => void;
 type StatusHandler = (status: WebSocketStatus) => void;
+type ReconnectedHandler = () => void;
 
 interface WebSocketClientOptions {
   url: string;
   heartbeatIntervalMs?: number;
   maxMissedPongs?: number;
+  maxReconnectAttempts?: number;
 }
 
 export class WebSocketClient {
@@ -22,11 +23,12 @@ export class WebSocketClient {
   private readonly url: string;
   private readonly heartbeatIntervalMs: number;
   private readonly maxMissedPongs: number;
+  private readonly maxReconnectAttempts: number;
 
-  private jsonHandlers = new Set<JsonHandler>();
-  private binaryHandlers = new Set<BinaryHandler>();
-  private statusHandlers = new Set<StatusHandler>();
-  private reconnectHandlers = new Set<() => void>();
+  private readonly jsonHandlers = new Set<JsonHandler>();
+  private readonly binaryHandlers = new Set<BinaryHandler>();
+  private readonly statusHandlers = new Set<StatusHandler>();
+  private readonly reconnectHandlers = new Set<ReconnectedHandler>();
 
   private reconnectTimer: number | null = null;
   private heartbeatTimer: number | null = null;
@@ -34,36 +36,49 @@ export class WebSocketClient {
   private reconnectAttempt = 0;
   private missedPongs = 0;
   private manuallyClosed = false;
+  private hasConnectedBefore = false;
 
   constructor(options: WebSocketClientOptions) {
     this.url = options.url;
     this.heartbeatIntervalMs = options.heartbeatIntervalMs ?? 25000;
     this.maxMissedPongs = options.maxMissedPongs ?? 3;
+    this.maxReconnectAttempts =
+      options.maxReconnectAttempts ?? 10;
   }
 
   connect() {
-    if (this.socket) return;
+    if (this.socket) {
+      return;
+    }
 
     this.manuallyClosed = false;
 
     const socket = new WebSocket(this.url);
-    socket.binaryType = "blob"; // camera JPEG frame 使用 Blob
+    socket.binaryType = "blob";
 
     this.socket = socket;
     this.emitStatus("connecting");
 
     socket.onopen = () => {
+      const isReconnect = this.hasConnectedBefore;
+
       this.reconnectAttempt = 0;
       this.missedPongs = 0;
+      this.hasConnectedBefore = true;
+
       this.startHeartbeat();
       this.emitStatus("open");
+
+      if (isReconnect) {
+        this.reconnectHandlers.forEach((handler) => handler());
+      }
     };
 
-    socket.onmessage = (event: MessageEvent<string | Blob | ArrayBuffer>) => {
+    socket.onmessage = (event: MessageEvent<string | Blob>) => {
       const data = event.data;
 
       // OpenCV / camera JPEG binary frame
-      if (data instanceof Blob || data instanceof ArrayBuffer) {
+      if (data instanceof Blob) {
         this.binaryHandlers.forEach((handler) => handler(data));
         return;
       }
@@ -80,19 +95,29 @@ export class WebSocketClient {
 
           this.jsonHandlers.forEach((handler) => handler(message));
         } catch (error) {
-          console.error("[WebSocketClient] Invalid JSON message:", error);
+          console.error(
+            "[WebSocketClient] Invalid JSON message:",
+            error,
+          );
         }
       }
     };
 
     socket.onerror = () => {
+      // 瀏覽器通常會在 error 後接著觸發 close；
+      // 這裡不直接設為 closed，讓 onclose 依 wasClean 判斷。
       this.emitStatus("error");
     };
 
-    socket.onclose = () => {
+    socket.onclose = (event: CloseEvent) => {
       this.stopHeartbeat();
       this.socket = null;
-      this.emitStatus("closed");
+
+      const nextStatus: WebSocketStatus = event.wasClean
+        ? "closed"
+        : "error";
+
+      this.emitStatus(nextStatus);
 
       if (!this.manuallyClosed) {
         this.scheduleReconnect();
@@ -100,13 +125,16 @@ export class WebSocketClient {
     };
   }
 
-  send(message: ClientMessage) {
+  send(message: ClientMessage): boolean {
     if (this.socket?.readyState !== WebSocket.OPEN) {
-      console.warn("[WebSocketClient] Cannot send; socket is not open.");
-      return;
+      console.warn(
+        "[WebSocketClient] Cannot send; socket is not open.",
+      );
+      return false;
     }
 
     this.socket.send(JSON.stringify(message));
+    return true;
   }
 
   onJson(handler: JsonHandler) {
@@ -133,8 +161,11 @@ export class WebSocketClient {
     };
   }
 
-  /** 每次成功重連後會呼叫，適合重新要求 mode/controlState/slamMap */
-  onReconnected(handler: () => void) {
+  /**
+   * 每次成功重連後會呼叫。
+   * 適合重新同步 mode / controlState 等伺服器狀態。
+   */
+  onReconnected(handler: ReconnectedHandler) {
     this.reconnectHandlers.add(handler);
 
     return () => {
@@ -142,8 +173,15 @@ export class WebSocketClient {
     };
   }
 
+  reconnect() {
+    this.reconnectAttempt = 0;
+    this.connect();
+  }
+
   close() {
     this.manuallyClosed = true;
+    this.hasConnectedBefore = false;
+
     this.stopHeartbeat();
 
     if (this.reconnectTimer !== null) {
@@ -163,7 +201,17 @@ export class WebSocketClient {
   }
 
   private scheduleReconnect() {
-    if (this.reconnectTimer !== null) return;
+    if (this.reconnectTimer !== null) {
+      return;
+    }
+
+    if (this.reconnectAttempt >= this.maxReconnectAttempts) {
+      console.warn(
+        "[WebSocketClient] Max reconnect attempts reached.",
+      );
+      this.emitStatus("error");
+      return;
+    }
 
     const baseDelay = 1000;
     const maxDelay = 30000;
@@ -173,7 +221,7 @@ export class WebSocketClient {
       baseDelay * 2 ** this.reconnectAttempt,
     );
 
-    // 加一點隨機 jitter，避免大量 client 同一瞬間重連
+    // 加入 jitter，避免大量 client 同一瞬間重連
     const delay = exponentialDelay + Math.random() * 500;
 
     this.reconnectAttempt += 1;
@@ -190,11 +238,15 @@ export class WebSocketClient {
 
     this.heartbeatTimer = window.setInterval(() => {
       if (this.missedPongs >= this.maxMissedPongs) {
-        console.warn("[WebSocketClient] Heartbeat failed; closing socket.");
+        console.warn(
+          "[WebSocketClient] Heartbeat failed; closing socket.",
+        );
+
         this.socket?.close();
         return;
       }
 
+      // 先送 ping；下一次 interval 才檢查是否收到 pong。
       this.missedPongs += 1;
       this.send({ type: "ping" });
     }, this.heartbeatIntervalMs);

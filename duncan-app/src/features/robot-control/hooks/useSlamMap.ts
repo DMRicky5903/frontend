@@ -15,12 +15,7 @@ import {
   MOCK_SLAM_MAP,
   MOCK_SLAM_POSE,
   USE_MOCK_SLAM_MAP,
-} from "../mock/mockSlamMap";
-
-// ==========================================
-// SLAM UI 內部狀態
-// 這些不是 WebSocket 協定，不放在 api/type.ts
-// ==========================================
+} from "../mockSlamMap";
 
 type SlamDestination = {
   x: number;
@@ -32,16 +27,18 @@ type SlamPendingClick = {
   y: number;
 };
 
-export function useSlamMap() {
+type UseSlamMapOptions = {
+  enabled?: boolean;
+};
+
+export function useSlamMap({ enabled = true }: UseSlamMapOptions = {}) {
   const send = useWebSocketSend();
 
   const [slamMap, setSlamMap] = useState<SlamMapMessage | null>(null);
   const [robotPose, setRobotPose] = useState<SlamPoseMessage | null>(null);
-
-  // 後端 slamClickAck 確認後的旗標
-  const [destination, setDestination] = useState<SlamDestination | null>(null);
-
-  // 使用者點擊後、收到 ack 前的 pending 圓點
+  const [destination, setDestination] = useState<SlamDestination | null>(
+    null,
+  );
   const [pendingClick, setPendingClick] =
     useState<SlamPendingClick | null>(null);
 
@@ -49,8 +46,6 @@ export function useSlamMap() {
     useCallback((message: JsonServerMessage) => {
       if (message.type === "slamMap") {
         setSlamMap(message);
-
-        // 收到新地圖時，重置目的地
         setDestination(null);
         setPendingClick(null);
         return;
@@ -62,7 +57,6 @@ export function useSlamMap() {
       }
 
       if (message.type === "slamClickAck") {
-        // 直接採用後端回傳的位置
         setDestination({
           x: message.x,
           y: message.y,
@@ -75,8 +69,10 @@ export function useSlamMap() {
 
   const handleMapClick = useCallback(
     (x: number, y: number) => {
-      // 只允許一個目的地：
-      // 新點擊會移除舊旗標與舊 pending
+      if (!enabled) {
+        return;
+      }
+
       setDestination(null);
       setPendingClick({ x, y });
 
@@ -86,10 +82,9 @@ export function useSlamMap() {
         y,
       });
     },
-    [send],
+    [enabled, send],
   );
 
-  // 測試用：沒有收到真 slamMap 時使用假地圖
   const effectiveSlamMap =
     slamMap ?? (USE_MOCK_SLAM_MAP ? MOCK_SLAM_MAP : null);
 

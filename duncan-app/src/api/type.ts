@@ -1,6 +1,7 @@
 // ==========================================
 // 共用類型
 // ==========================================
+
 export type WheelDirection = "W" | "A" | "S" | "D" | "";
 export type GimbalDirection = "I" | "J" | "K" | "L" | "";
 export type RobotMode = 0 | 1 | 2;
@@ -14,6 +15,7 @@ export type WebSocketStatus =
 // ==========================================
 // 前端 → 後端
 // ==========================================
+
 export type JoystickMessage = {
   type: "joystick";
   wheels: WheelDirection;
@@ -44,6 +46,7 @@ export type ClientMessage =
 // ==========================================
 // 後端 → 前端：JSON
 // ==========================================
+
 export type ChatResponseMessage = {
   type: "chat";
   content: string;
@@ -61,6 +64,7 @@ export type ModeMessage = {
 
 export type SlamMapMessage = {
   type: "slamMap";
+  /** base64-encoded JPEG image */
   image: string;
   resolution: number;
   origin: {
@@ -86,7 +90,13 @@ export type PongMessage = {
   type: "pong";
 };
 
+export type ClientIdentityMessage = {
+  type: "clientIdentity";
+  clientId: string;
+};
+
 export type JsonServerMessage =
+  | ClientIdentityMessage
   | ChatResponseMessage
   | ControlStateMessage
   | ModeMessage
@@ -98,6 +108,13 @@ export type JsonServerMessage =
 // ==========================================
 // 後端 → 前端：OpenCV camera binary
 // ==========================================
-export type CameraFrame = Blob | ArrayBuffer;
+
+/**
+ * 目前 WebSocketClient 固定使用：
+ * socket.binaryType = "blob"
+ *
+ * 因此 camera frame 會是 Blob，不會是 ArrayBuffer。
+ */
+export type CameraFrame = Blob;
 
 export type ServerMessage = JsonServerMessage | CameraFrame;

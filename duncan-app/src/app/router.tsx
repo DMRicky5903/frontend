@@ -19,12 +19,12 @@ export const router = createBrowserRouter([
     element: <AppHeader />,
     children: [
       {
-        index: true,
-        element: <HomePage />,
-      },
-      {
         element: <RequireLandscapeOutlet />,
         children: [
+          {
+            index: true,
+            element: <HomePage />,
+          },
           {
             path: "chat",
             element: <ChatPage />,

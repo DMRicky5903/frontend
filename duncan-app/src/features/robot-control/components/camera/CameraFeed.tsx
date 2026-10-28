@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   CameraOutlined,
   DisconnectOutlined,
@@ -6,60 +5,24 @@ import {
   ReloadOutlined,
 } from "@ant-design/icons";
 
+import { useCameraStream } from "../../hooks/useCameraStream";
+
 import styles from "./CameraFeed.module.css";
 
 type CameraFeedProps = {
-  streamUrl?: string;
   title?: string;
   className?: string;
+  connectionTimeoutMs?: number;
 };
 
 export function CameraFeed({
-  streamUrl,
   title = "FRONT CAMERA",
   className,
+  connectionTimeoutMs,
 }: CameraFeedProps) {
-  const [status, setStatus] = useState<"connecting" | "online" | "offline">(
-    streamUrl ? "connecting" : "offline",
-  );
-
-  const [reloadKey, setReloadKey] = useState(0);
-
-  useEffect(() => {
-    if (!streamUrl) {
-      setStatus("offline");
-      return;
-    }
-
-    setStatus("connecting");
-
-    const timeout = window.setTimeout(() => {
-      setStatus((currentStatus) =>
-        currentStatus === "connecting" ? "offline" : currentStatus,
-      );
-    }, 6000);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [streamUrl, reloadKey]);
-
-  const handleLoad = () => {
-    setStatus("online");
-  };
-
-  const handleError = () => {
-    setStatus("offline");
-  };
-
-  const handleRetry = () => {
-    if (!streamUrl) {
-      return;
-    }
-
-    setReloadKey((key) => key + 1);
-    setStatus("connecting");
-  };
+  const { frameUrl, status, retry } = useCameraStream({
+    connectionTimeoutMs,
+  });
 
   return (
     <section className={`${styles.cameraPanel} ${className ?? ""}`}>
@@ -92,14 +55,11 @@ export function CameraFeed({
       </header>
 
       <div className={styles.cameraViewport}>
-        {streamUrl && status !== "offline" ? (
+        {frameUrl ? (
           <img
-            key={reloadKey}
-            src={streamUrl}
-            alt="Camera stream"
+            src={frameUrl}
+            alt="Real-time camera stream"
             className={styles.cameraStream}
-            onLoad={handleLoad}
-            onError={handleError}
           />
         ) : (
           <div className={styles.offlineArt}>
@@ -108,7 +68,7 @@ export function CameraFeed({
 
             <div className={styles.offlineContent}>
               <div className={styles.offlineIcon}>
-                {streamUrl ? (
+                {status === "offline" ? (
                   <DisconnectOutlined />
                 ) : (
                   <CameraOutlined />
@@ -116,33 +76,34 @@ export function CameraFeed({
               </div>
 
               <h3 className={styles.offlineTitle}>
-                {streamUrl ? "SIGNAL LOST" : "CAMERA OFFLINE"}
+                {status === "offline" ? "SIGNAL LOST" : "WAITING FOR STREAM"}
               </h3>
 
               <p className={styles.offlineDescription}>
-                {streamUrl
-                  ? "Waiting for OpenCV video stream..."
-                  : "Backend camera stream is not connected."}
+                {status === "offline"
+                  ? "No camera frames received. Check the backend stream."
+                  : "Waiting for OpenCV camera frames..."}
               </p>
 
-              {streamUrl && (
+              {status === "offline" && (
                 <button
                   type="button"
                   className={styles.retryButton}
-                  onClick={handleRetry}
+                  onClick={retry}
                 >
                   <ReloadOutlined />
                   Retry
                 </button>
               )}
-            </div>
-          </div>
-        )}
 
-        {status === "connecting" && (
-          <div className={styles.loadingOverlay}>
-            <LoadingOutlined className={styles.loadingIcon} />
-            <span>Connecting to camera...</span>
+              {status === "connecting" && !frameUrl && (
+                <div className={styles.connectingHint}>
+                  <LoadingOutlined className={styles.loadingIcon} />
+                  <span>Connecting to camera...</span>
+                </div>
+              )}
+            </div>
+
           </div>
         )}
 
@@ -154,7 +115,7 @@ export function CameraFeed({
 
       <footer className={styles.cameraFooter}>
         <span>OPENCV FEED</span>
-        <span>{streamUrl ? streamUrl : "NOT CONFIGURED"}</span>
+        <span>WEBSOCKET LIVE STREAM</span>
       </footer>
     </section>
   );

@@ -1,12 +1,14 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { Typography } from "antd";
 
 import { CameraFeed } from "../../features/robot-control/components/camera/CameraFeed";
 import { JoystickControl } from "../../features/robot-control/components/joystick/JoystickControl";
 import { StatusLight } from "../../features/robot-control/components/status-light/StatusLight";
-import { SlamRadarMinimap } from "../../features/robot-control/components/slam-map/SlamRadarMinimap";
+import { SlamRadarMinimap } from "../../features/robot-control/components/slam-radar/SlamRadarMinimap";
 
 import { useKeyboardJoystick } from "../../features/robot-control/hooks/useKeyboardJoystick";
+import { useRobotControl } from "../../features/robot-control/hooks/useRobotControl";
+import { useControlPermission } from "../../api/useControlPermission";
 
 import type {
   WheelDirection,
@@ -19,46 +21,62 @@ const { Title } = Typography;
 
 type Direction = "FORWARD" | "BACKWARD" | "LEFT" | "RIGHT";
 
-const CAMERA_STREAM_URL =
-  import.meta.env.VITE_CAMERA_STREAM_URL ?? "";
+const DIRECTION_TO_WHEEL: Record<Direction, WheelDirection> = {
+  FORWARD: "W",
+  BACKWARD: "S",
+  LEFT: "A",
+  RIGHT: "D",
+};
+
+const DIRECTION_TO_GIMBAL: Record<Direction, GimbalDirection> = {
+  FORWARD: "I",
+  BACKWARD: "K",
+  LEFT: "J",
+  RIGHT: "L",
+};
+
+const WHEEL_TO_DIRECTION: Record<WheelDirection, Direction | ""> = {
+  W: "FORWARD",
+  S: "BACKWARD",
+  A: "LEFT",
+  D: "RIGHT",
+  "": "",
+};
+
+const GIMBAL_TO_DIRECTION: Record<GimbalDirection, Direction | ""> = {
+  I: "FORWARD",
+  K: "BACKWARD",
+  J: "LEFT",
+  L: "RIGHT",
+  "": "",
+};
 
 export function RemotePage() {
-  const [lock, setLock] = useState(true);
+  const { canSend } = useControlPermission(2);
 
-  const [WheelDirection, setWheelDirection] =
-    useState<WheelDirection>("");
-
-  const [GimbalDirection, setGimbalDirection] =
-    useState<GimbalDirection>("");
+  const {
+    wheelDirection,
+    gimbalDirection,
+    moveWheel,
+    moveGimbal,
+  } = useRobotControl({ enabled: canSend });
 
   const handleLeftMove = useCallback(
     (direction: Direction | "") => {
-      setWheelDirection(direction as WheelDirection);
-
-      if (!lock && direction) {
-        console.log("SEND:", {
-          type: "joystick",
-          left: direction,
-          right: GimbalDirection,
-        });
-      }
+      moveWheel(
+        direction ? DIRECTION_TO_WHEEL[direction] : "",
+      );
     },
-    [lock, GimbalDirection],
+    [moveWheel],
   );
 
   const handleRightMove = useCallback(
     (direction: Direction | "") => {
-      setGimbalDirection(direction as GimbalDirection);
-
-      if (!lock && direction) {
-        console.log("SEND:", {
-          type: "joystick",
-          left: WheelDirection,
-          right: direction,
-        });
-      }
+      moveGimbal(
+        direction ? DIRECTION_TO_GIMBAL[direction] : "",
+      );
     },
-    [lock, WheelDirection],
+    [moveGimbal],
   );
 
   useKeyboardJoystick({
@@ -71,12 +89,11 @@ export function RemotePage() {
       <div className={styles.backgroundGlow} />
       <div className={styles.backgroundGrid} />
 
-      {/* SLAM 雷達小地圖：右上角 */}
-      <SlamRadarMinimap />
+      <SlamRadarMinimap enabled={canSend} />
 
       <header className={styles.pageHeader}>
         <div className={styles.headerSide}>
-          <StatusLight locked={lock} />
+          <StatusLight locked={!canSend} />
         </div>
 
         <div className={styles.titleGroup}>
@@ -102,7 +119,7 @@ export function RemotePage() {
             <JoystickControl
               label="LEFT"
               side="left"
-              value={WheelDirection as Direction | ""}
+              value={WHEEL_TO_DIRECTION[wheelDirection]}
               onMove={handleLeftMove}
               onStop={() => handleLeftMove("")}
             />
@@ -112,7 +129,6 @@ export function RemotePage() {
         <section className={styles.cameraColumn}>
           <CameraFeed
             title="FRONT CAMERA"
-            streamUrl={CAMERA_STREAM_URL || undefined}
             className={styles.cameraFeed}
           />
         </section>
@@ -122,7 +138,7 @@ export function RemotePage() {
             <JoystickControl
               label="RIGHT"
               side="right"
-              value={GimbalDirection as Direction | ""}
+              value={GIMBAL_TO_DIRECTION[gimbalDirection]}
               onMove={handleRightMove}
               onStop={() => handleRightMove("")}
             />

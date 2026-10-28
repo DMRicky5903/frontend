@@ -2,23 +2,24 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useSlamMap } from "../../hooks/useSlamMap";
 
-import { SlamMapOverlay } from "./SlamMapOverlay";
+import { SlamMapOverlay } from "../slam-map/SlamMapOverlay";
 
 import styles from "./SlamRadarMinimap.module.css";
 
 type SlamRadarMinimapProps = {
   className?: string;
+  enabled?: boolean;
 };
 
 const RADAR_SIZE = 320;
 const VIEW_DISTANCE = 120;
-const VIEW_FOV = Math.PI / 3; // 60 度視野
+const VIEW_FOV = Math.PI / 3;
 
-// Canvas 中：0 = 右邊，-PI / 2 = 正上方
 const UP_DIRECTION = -Math.PI / 2;
 
 export function SlamRadarMinimap({
   className,
+  enabled = true,
 }: SlamRadarMinimapProps) {
   const {
     slamMap,
@@ -26,14 +27,13 @@ export function SlamRadarMinimap({
     destination,
     pendingClick,
     handleMapClick,
-  } = useSlamMap();
+  } = useSlamMap({ enabled });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mapImageRef = useRef<HTMLImageElement | null>(null);
 
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
 
-  // 載入 SLAM 地圖
   useEffect(() => {
     if (!slamMap) {
       mapImageRef.current = null;
@@ -50,87 +50,76 @@ export function SlamRadarMinimap({
   }, [slamMap]);
 
   const drawRadar = useCallback(() => {
-  const canvas = canvasRef.current;
-  const ctx = canvas?.getContext("2d");
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
 
-  if (!canvas || !ctx) return;
+    if (!canvas || !ctx) return;
 
-  const center = RADAR_SIZE / 2;
-  const radarRadius = center - 2;
+    const center = RADAR_SIZE / 2;
+    const radarRadius = center - 2;
 
-  ctx.clearRect(0, 0, RADAR_SIZE, RADAR_SIZE);
-
-  // 雷達背景
-  ctx.beginPath();
-  ctx.arc(center, center, radarRadius, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(4, 10, 22, 0.85)";
-  ctx.fill();
-
-  const mapImage = mapImageRef.current;
-
-  if (mapImage && slamMap && robotPose) {
-    const robotMapX =
-      (robotPose.x - slamMap.origin.x) / slamMap.resolution;
-
-    const robotMapY =
-      (robotPose.y - slamMap.origin.y) / slamMap.resolution;
-
-    // 只在圓形範圍內畫地圖
-    ctx.save();
+    ctx.clearRect(0, 0, RADAR_SIZE, RADAR_SIZE);
 
     ctx.beginPath();
     ctx.arc(center, center, radarRadius, 0, Math.PI * 2);
-    ctx.clip();
+    ctx.fillStyle = "rgba(4, 10, 22, 0.85)";
+    ctx.fill();
 
-    ctx.save();
-    ctx.translate(center, center);
-    ctx.rotate(-robotPose.yaw);
-    ctx.translate(-robotMapX, -robotMapY);
-    ctx.drawImage(mapImage, 0, 0);
-    ctx.restore();
+    const mapImage = mapImageRef.current;
 
-    // 視線方向
-    drawViewCone(ctx, center, center, UP_DIRECTION);
+    if (mapImage && slamMap && robotPose) {
+      const robotMapX =
+        (robotPose.x - slamMap.origin.x) / slamMap.resolution;
 
-    // 機器人
-    drawRobotMarker(ctx, center, center, 0);
+      const robotMapY =
+        (robotPose.y - slamMap.origin.y) / slamMap.resolution;
 
-    ctx.restore();
-  } else {
-    // 沒有地圖時仍顯示視線與機器人
-    drawViewCone(ctx, center, center, UP_DIRECTION);
-    drawRobotMarker(ctx, center, center, 0);
-  }
+      ctx.save();
 
-  // ==========================================
-  // 邊緣區域：讓地圖接近邊界時自然變暗
-  // ==========================================
-  const edgeGradient = ctx.createRadialGradient(
-    center,
-    center,
-    radarRadius * 0.62,
-    center,
-    center,
-    radarRadius,
-  );
+      ctx.beginPath();
+      ctx.arc(center, center, radarRadius, 0, Math.PI * 2);
+      ctx.clip();
 
-  edgeGradient.addColorStop(0, "rgba(4, 10, 22, 0)");
-  edgeGradient.addColorStop(0.75, "rgba(4, 10, 22, 0.35)");
-  edgeGradient.addColorStop(1, "rgba(4, 10, 22, 0.92)");
+      ctx.save();
+      ctx.translate(center, center);
+      ctx.rotate(-robotPose.yaw);
+      ctx.translate(-robotMapX, -robotMapY);
+      ctx.drawImage(mapImage, 0, 0);
+      ctx.restore();
 
-  ctx.beginPath();
-  ctx.arc(center, center, radarRadius, 0, Math.PI * 2);
-  ctx.fillStyle = edgeGradient;
-  ctx.fill();
+      drawViewCone(ctx, center, center, UP_DIRECTION);
+      drawRobotMarker(ctx, center, center, 0);
 
-  // 外框
-  ctx.beginPath();
-  ctx.arc(center, center, radarRadius, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(0, 220, 255, 0.35)";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-}, [slamMap, robotPose]);
+      ctx.restore();
+    } else {
+      drawViewCone(ctx, center, center, UP_DIRECTION);
+      drawRobotMarker(ctx, center, center, 0);
+    }
 
+    const edgeGradient = ctx.createRadialGradient(
+      center,
+      center,
+      radarRadius * 0.62,
+      center,
+      center,
+      radarRadius,
+    );
+
+    edgeGradient.addColorStop(0, "rgba(4, 10, 22, 0)");
+    edgeGradient.addColorStop(0.75, "rgba(4, 10, 22, 0.35)");
+    edgeGradient.addColorStop(1, "rgba(4, 10, 22, 0.92)");
+
+    ctx.beginPath();
+    ctx.arc(center, center, radarRadius, 0, Math.PI * 2);
+    ctx.fillStyle = edgeGradient;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(center, center, radarRadius, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(0, 220, 255, 0.35)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }, [slamMap, robotPose]);
 
   useEffect(() => {
     drawRadar();
@@ -191,7 +180,6 @@ function drawViewCone(
   ctx.arc(x, y, VIEW_DISTANCE, startAngle, endAngle);
   ctx.closePath();
 
-  // 由機器人向外淡出，沒有邊框線
   const gradient = ctx.createRadialGradient(
     x,
     y,
@@ -221,13 +209,11 @@ function drawRobotMarker(
   ctx.translate(x, y);
   ctx.rotate(yaw);
 
-  // 機器人主體
   ctx.beginPath();
   ctx.arc(0, 0, 9, 0, Math.PI * 2);
   ctx.fillStyle = "#00e5ff";
   ctx.fill();
 
-  // 機器人前方箭頭
   ctx.beginPath();
   ctx.moveTo(0, -14);
   ctx.lineTo(8, 6);

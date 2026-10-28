@@ -6,6 +6,7 @@
 src/
 ├── api
 │   ├── type.ts
+│   ├── useControlPermission.ts
 │   ├── useWebSocket.ts
 │   ├── WebSocketClient.ts
 │   └── WebSocketProvider.tsx
@@ -40,11 +41,21 @@ src/
 │       │   ├── joystick
 │       │   │   ├── JoystickControl.module.css
 │       │   │   └── JoystickControl.tsx
+│       │   ├── slam-map
+│       │   │   ├── SlamMapOverlay.module.css
+│       │   │   └── SlamMapOverlay.tsx
+│       │   ├── slam-radar
+│       │   │   ├── SlamRadarMinimap.module.css
+│       │   │   └── SlamRadarMinimap.tsx
 │       │   └── status-light
 │       │       ├── StatusLight.module.css
 │       │       └── StatusLight.tsx
-│       └── hooks
-│           └── useKeyboardJoystick.ts
+│       ├── hooks
+│       │   ├── useCameraStream.ts
+│       │   ├── useKeyboardJoystick.ts
+│       │   ├── useRobotControl.ts
+│       │   └── useSlamMap.ts
+│       └── mockSlamMap.ts
 ├── pages
 │   ├── chat
 │   │   ├── ChatPage.module.css
