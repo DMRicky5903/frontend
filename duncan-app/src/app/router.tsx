@@ -1,4 +1,4 @@
-import { createBrowserRouter, Outlet } from "react-router";
+import { createBrowserRouter } from "react-router";
 
 import { AppHeader } from "./layouts/AppHeader";
 import { RequireLandscapeOutlet } from "../app/layouts/RequireLandscapeOutlet";
