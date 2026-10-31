@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useState ,useRef } from "react";
 
 import type {
   SlamMapMessage,
@@ -26,6 +26,16 @@ type SlamMapOverlayProps = {
   onClose: () => void;
 };
 
+type MapPixelPoint = {
+  x: number;
+  y: number;
+};
+
+type WorldPoint = {
+  x: number;
+  y: number;
+};
+
 const VIEW_DISTANCE = 160;
 const VIEW_FOV = Math.PI / 3; // 60 度視野
 
@@ -38,90 +48,134 @@ export function SlamMapOverlay({
   onClose,
 }: SlamMapOverlayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mapImageRef = useRef<HTMLImageElement | null>(null);
 
-  // 載入地圖
+  const [mapImage, setMapImage] =
+    useState<HTMLImageElement | null>(null);
+
+  // 1. 當 slamMap.image 改變時載入地圖
   useEffect(() => {
-    if (!slamMap) {
-      mapImageRef.current = null;
+    if (!slamMap?.image) {
+      setMapImage(null);
       return;
     }
 
+    let cancelled = false;
+
     const image = new Image();
-    image.src = slamMap.image;
 
     image.onload = () => {
-      mapImageRef.current = image;
-
-      const canvas = canvasRef.current;
-      const ctx = canvas?.getContext("2d");
-
-      if (!canvas || !ctx) return;
-
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-
-      drawMap();
+      if (cancelled) return;
+      setMapImage(image);
     };
-  }, [slamMap]);
 
+    image.onerror = () => {
+      if (cancelled) return;
+      setMapImage(null);
+    };
+
+    image.src = slamMap.image;
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slamMap?.image]);
+
+  // 2. 當地圖、機器人、點擊或目的地改變時重繪
   const drawMap = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
-    const mapImage = mapImageRef.current;
 
     if (!canvas || !ctx) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 沒有地圖：保持空白
     if (!mapImage || !slamMap) {
       return;
     }
 
+    if (
+      canvas.width !== mapImage.naturalWidth ||
+      canvas.height !== mapImage.naturalHeight
+    ) {
+      canvas.width = mapImage.naturalWidth;
+      canvas.height = mapImage.naturalHeight;
+    }
+
     ctx.drawImage(mapImage, 0, 0);
 
-    // 畫機器人與視線方向
     if (robotPose) {
-      const robotX =
-        (robotPose.x - slamMap.origin.x) / slamMap.resolution;
+      const robotPixel = worldToMapPixel(
+        robotPose,
+        slamMap,
+      );
 
-      const robotY =
-        (robotPose.y - slamMap.origin.y) / slamMap.resolution;
-
-      // ROS yaw 是逆時針；Canvas y 軸向下，
-      // 繪圖時使用 -yaw 才能對應地圖方向
       const canvasYaw = -robotPose.yaw;
 
       drawViewCone(
         ctx,
-        robotX,
-        robotY,
-        canvasYaw,
+        robotPixel.x,
+        robotPixel.y,
+        canvasYaw - Math.PI / 2,
       );
 
-      drawRobot(ctx, robotX, robotY, canvasYaw);
+      drawRobot(
+        ctx,
+        robotPixel.x,
+        robotPixel.y,
+        canvasYaw,
+      );
     }
 
-    // 畫 pending 圓點
+
     if (pendingClick) {
+      const pendingPixel = worldToMapPixel(
+        pendingClick,
+        slamMap,
+      );
+
       ctx.beginPath();
-      ctx.arc(pendingClick.x, pendingClick.y, 12, 0, Math.PI * 2);
+      ctx.arc(
+        pendingPixel.x,
+        pendingPixel.y,
+        12,
+        0,
+        Math.PI * 2,
+      );
       ctx.fillStyle = "rgba(0, 229, 255, 0.32)";
       ctx.fill();
 
       ctx.beginPath();
-      ctx.arc(pendingClick.x, pendingClick.y, 12, 0, Math.PI * 2);
+      ctx.arc(
+        pendingPixel.x,
+        pendingPixel.y,
+        12,
+        0,
+        Math.PI * 2,
+      );
       ctx.strokeStyle = "rgba(0, 229, 255, 0.9)";
       ctx.lineWidth = 3;
       ctx.stroke();
     }
 
-    // 畫已確認旗標
     if (destination) {
-      drawDestinationFlag(ctx, destination.x, destination.y);
+      const destinationPixel = worldToMapPixel(
+        destination,
+        slamMap,
+      );
+
+      drawDestinationFlag(
+        ctx,
+        destinationPixel.x,
+        destinationPixel.y,
+      );
     }
-  }, [slamMap, robotPose, pendingClick, destination]);
+  }, [
+    mapImage,
+    slamMap,
+    robotPose,
+    pendingClick,
+    destination,
+  ]);
 
   useEffect(() => {
     drawMap();
@@ -135,15 +189,23 @@ export function SlamMapOverlay({
 
       const rect = canvas.getBoundingClientRect();
 
-      const x = Math.round(
-        ((event.clientX - rect.left) / rect.width) * canvas.width,
-      );
+      const pixelX =
+        ((event.clientX - rect.left) / rect.width) *
+        canvas.width;
 
-      const y = Math.round(
-        ((event.clientY - rect.top) / rect.height) * canvas.height,
-      );
+      const pixelY =
+        ((event.clientY - rect.top) / rect.height) *
+        canvas.height;
 
-      onMapClick(x, y);
+      const worldX =
+        slamMap.origin.x +
+        pixelX * slamMap.resolution;
+
+      const worldY =
+        slamMap.origin.y +
+        pixelY * slamMap.resolution;
+
+      onMapClick(worldX, worldY);
     },
     [slamMap, onMapClick],
   );
@@ -182,6 +244,21 @@ export function SlamMapOverlay({
   );
 }
 
+function worldToMapPixel(
+  point: WorldPoint,
+  slamMap: SlamMapMessage,
+): MapPixelPoint {
+  return {
+    x:
+      (point.x - slamMap.origin.x) /
+      slamMap.resolution,
+
+    y:
+      (point.y - slamMap.origin.y) /
+      slamMap.resolution,
+  };
+}
+
 function drawViewCone(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -198,7 +275,6 @@ function drawViewCone(
   ctx.arc(x, y, VIEW_DISTANCE, startAngle, endAngle);
   ctx.closePath();
 
-  // 由機器人向外淡出，沒有邊框線
   const gradient = ctx.createRadialGradient(
     x,
     y,
@@ -228,13 +304,11 @@ function drawRobot(
   ctx.translate(x, y);
   ctx.rotate(yaw);
 
-  // 機器人主體
   ctx.beginPath();
   ctx.arc(0, 0, 12, 0, Math.PI * 2);
   ctx.fillStyle = "#00e5ff";
   ctx.fill();
 
-  // 機器人前方箭頭
   ctx.beginPath();
   ctx.moveTo(0, -18);
   ctx.lineTo(10, 8);

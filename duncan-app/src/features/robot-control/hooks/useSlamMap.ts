@@ -11,12 +11,6 @@ import type {
   SlamPoseMessage,
 } from "../../../api/type";
 
-import {
-  MOCK_SLAM_MAP,
-  MOCK_SLAM_POSE,
-  USE_MOCK_SLAM_MAP,
-} from "../mockSlamMap";
-
 type SlamDestination = {
   x: number;
   y: number;
@@ -31,23 +25,33 @@ type UseSlamMapOptions = {
   enabled?: boolean;
 };
 
-export function useSlamMap({ enabled = true }: UseSlamMapOptions = {}) {
+// 讓使用者離開 SLAM 頁面後，
+// 重新進入時仍能立即顯示最後一次收到的地圖。
+let lastSlamMap: SlamMapMessage | null = null;
+
+export function useSlamMap({
+  enabled = true,
+}: UseSlamMapOptions = {}) {
   const send = useWebSocketSend();
 
-  const [slamMap, setSlamMap] = useState<SlamMapMessage | null>(null);
-  const [robotPose, setRobotPose] = useState<SlamPoseMessage | null>(null);
-  const [destination, setDestination] = useState<SlamDestination | null>(
-    null,
+  const [slamMap, setSlamMap] = useState<SlamMapMessage | null>(
+    lastSlamMap,
   );
+
+  const [robotPose, setRobotPose] =
+    useState<SlamPoseMessage | null>(null);
+
+  const [destination, setDestination] =
+    useState<SlamDestination | null>(null);
+
   const [pendingClick, setPendingClick] =
     useState<SlamPendingClick | null>(null);
 
   useWebSocketJson(
     useCallback((message: JsonServerMessage) => {
       if (message.type === "slamMap") {
+        lastSlamMap = message;
         setSlamMap(message);
-        setDestination(null);
-        setPendingClick(null);
         return;
       }
 
@@ -85,15 +89,9 @@ export function useSlamMap({ enabled = true }: UseSlamMapOptions = {}) {
     [enabled, send],
   );
 
-  const effectiveSlamMap =
-    slamMap ?? (USE_MOCK_SLAM_MAP ? MOCK_SLAM_MAP : null);
-
-  const effectiveRobotPose =
-    robotPose ?? (USE_MOCK_SLAM_MAP ? MOCK_SLAM_POSE : null);
-
   return {
-    slamMap: effectiveSlamMap,
-    robotPose: effectiveRobotPose,
+    slamMap,
+    robotPose,
     destination,
     pendingClick,
     handleMapClick,

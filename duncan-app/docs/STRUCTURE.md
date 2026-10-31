@@ -50,12 +50,11 @@ src/
 │       │   └── status-light
 │       │       ├── StatusLight.module.css
 │       │       └── StatusLight.tsx
-│       ├── hooks
-│       │   ├── useCameraStream.ts
-│       │   ├── useKeyboardJoystick.ts
-│       │   ├── useRobotControl.ts
-│       │   └── useSlamMap.ts
-│       └── mockSlamMap.ts
+│       └── hooks
+│           ├── useCameraStream.ts
+│           ├── useKeyboardJoystick.ts
+│           ├── useRobotControl.ts
+│           └── useSlamMap.ts
 ├── pages
 │   ├── chat
 │   │   ├── ChatPage.module.css

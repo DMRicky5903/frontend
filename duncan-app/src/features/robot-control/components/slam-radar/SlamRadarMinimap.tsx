@@ -30,24 +30,38 @@ export function SlamRadarMinimap({
   } = useSlamMap({ enabled });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mapImageRef = useRef<HTMLImageElement | null>(null);
+
+  const [mapImage, setMapImage] =
+    useState<HTMLImageElement | null>(null);
 
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
 
   useEffect(() => {
-    if (!slamMap) {
-      mapImageRef.current = null;
+    if (!slamMap?.image) {
+      setMapImage(null);
       return;
     }
 
+    let cancelled = false;
+
     const image = new Image();
-    image.src = slamMap.image;
 
     image.onload = () => {
-      mapImageRef.current = image;
-      drawRadar();
+      if (cancelled) return;
+      setMapImage(image);
     };
-  }, [slamMap]);
+
+    image.onerror = () => {
+      if (cancelled) return;
+      setMapImage(null);
+    };
+
+    image.src = slamMap.image;
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slamMap?.image]);
 
   const drawRadar = useCallback(() => {
     const canvas = canvasRef.current;
@@ -65,14 +79,14 @@ export function SlamRadarMinimap({
     ctx.fillStyle = "rgba(4, 10, 22, 0.85)";
     ctx.fill();
 
-    const mapImage = mapImageRef.current;
-
     if (mapImage && slamMap && robotPose) {
       const robotMapX =
-        (robotPose.x - slamMap.origin.x) / slamMap.resolution;
+        (robotPose.x - slamMap.origin.x) /
+        slamMap.resolution;
 
       const robotMapY =
-        (robotPose.y - slamMap.origin.y) / slamMap.resolution;
+        (robotPose.y - slamMap.origin.y) /
+        slamMap.resolution;
 
       ctx.save();
 
@@ -81,10 +95,14 @@ export function SlamRadarMinimap({
       ctx.clip();
 
       ctx.save();
+
+      // 機器人固定朝上；旋轉的是地圖。
+      // 必須使用 +yaw，才能對齊大地圖的 -yaw 機器人旋轉。
       ctx.translate(center, center);
-      ctx.rotate(-robotPose.yaw);
+      ctx.rotate(robotPose.yaw);
       ctx.translate(-robotMapX, -robotMapY);
       ctx.drawImage(mapImage, 0, 0);
+
       ctx.restore();
 
       drawViewCone(ctx, center, center, UP_DIRECTION);
@@ -119,7 +137,7 @@ export function SlamRadarMinimap({
     ctx.strokeStyle = "rgba(0, 220, 255, 0.35)";
     ctx.lineWidth = 2;
     ctx.stroke();
-  }, [slamMap, robotPose]);
+  }, [slamMap, robotPose, mapImage]);
 
   useEffect(() => {
     drawRadar();
