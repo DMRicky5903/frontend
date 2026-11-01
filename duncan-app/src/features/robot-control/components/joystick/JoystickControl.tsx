@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   CaretDownOutlined,
   CaretLeftOutlined,
@@ -17,6 +17,7 @@ type JoystickControlProps = {
   onMove: (direction: Direction) => void;
   onStop: () => void;
   size?: number;
+  repeatInterval?: number;
 };
 
 const LEFT_DIRECTION_MAP: Record<Direction, string> = {
@@ -40,8 +41,10 @@ export function JoystickControl({
   onMove,
   onStop,
   size = 170,
+  repeatInterval = 120,
 }: JoystickControlProps) {
   const baseRef = useRef<HTMLDivElement>(null);
+  const repeatTimerRef = useRef<number | null>(null);
 
   const directionMap =
     side === "right" ? RIGHT_DIRECTION_MAP : LEFT_DIRECTION_MAP;
@@ -83,16 +86,73 @@ export function JoystickControl({
     [],
   );
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+  const stopRepeat = useCallback(() => {
+    if (repeatTimerRef.current !== null) {
+      window.clearInterval(repeatTimerRef.current);
+      repeatTimerRef.current = null;
+    }
+
+    onStop();
+  }, [onStop]);
+
+  useEffect(() => {
+    return () => {
+      if (repeatTimerRef.current !== null) {
+        window.clearInterval(repeatTimerRef.current);
+      }
+    };
+  }, []);
+
+  const startRepeat = useCallback(
+    (direction: Direction) => {
+      onMove(direction);
+
+      if (repeatTimerRef.current !== null) {
+        window.clearInterval(repeatTimerRef.current);
+      }
+
+      repeatTimerRef.current = window.setInterval(() => {
+        onMove(direction);
+      }, repeatInterval);
+    },
+    [onMove, repeatInterval],
+  );
+
+  const handlePointerDown = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+
+    startRepeat(
+      getDirectionFromPosition(event.clientX, event.clientY),
+    );
+  };
+
+  const handlePointerMove = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
     if (event.buttons !== 1) {
       return;
     }
 
-    onMove(getDirectionFromPosition(event.clientX, event.clientY));
+    const direction = getDirectionFromPosition(
+      event.clientX,
+      event.clientY,
+    );
+
+    onMove(direction);
+
+    if (repeatTimerRef.current !== null) {
+      window.clearInterval(repeatTimerRef.current);
+    }
+
+    repeatTimerRef.current = window.setInterval(() => {
+      onMove(direction);
+    }, repeatInterval);
   };
 
   const handlePointerUp = () => {
-    onStop();
+    stopRepeat();
   };
 
   return (
@@ -114,13 +174,7 @@ export function JoystickControl({
           width: size,
           height: size,
         }}
-        onPointerDown={(event) => {
-          event.currentTarget.setPointerCapture(event.pointerId);
-
-          onMove(
-            getDirectionFromPosition(event.clientX, event.clientY),
-          );
-        }}
+        onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
