@@ -1,32 +1,32 @@
-# React + TypeScript + Vite
+# Duncan App Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Duncan App Frontend 是一個以 React、TypeScript 與 Vite 建立的機器人遠端控制介面。它提供聊天互動、機器人狀態監控、攝影機畫面、遙控操作，以及 SLAM 地圖與雷達資訊顯示。
 
-Currently, two official plugins are available:
+## 功能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **聊天介面**：提供訊息輸入、訊息列表與訊息氣泡顯示，並透過 WebSocket 與後端服務通訊。
+- **機器人控制**：包含虛擬搖桿、鍵盤操控、狀態燈號與遠端控制頁面。
+- **視覺資訊**：顯示攝影機畫面、SLAM 地圖疊層與雷達迷你地圖。
+- **權限控制**：依使用者權限決定可用的控制功能。
+- **響應式介面**：針對不同裝置方向與螢幕尺寸提供對應的版面與操作體驗。
 
-## React Compiler
+## 技術架構
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React
+- TypeScript
+- Vite
+- React Router
+- WebSocket
+- CSS Modules
+- Oxlint
 
-## Expanding the Oxlint configuration
+## 專案結構
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+```text
+src/
+├── api/                 # WebSocket、API 類型與權限相關邏輯
+├── app/                 # 應用程式進入點、路由與版面配置
+├── features/
+│   ├── chat/            # 聊天功能
+│   └── robot-control/   # 機器人控制、攝影機與 SLAM 顯示
+└── pages/               # 頁面層級元件
